@@ -1,0 +1,2 @@
+import { liveModule } from "../core/live-module.js";
+export async function render(root){return liveModule(root,{"eyebrow": "Settlement & GL", "title": "Financial Operations", "description": "Live network settlement, clearing and accounting positions", "sources": [{"label": "Network Positions", "path": "/cms/financial-operations/net-settlement/positions"}, {"label": "Clearing Batches", "path": "/cms/financial-operations/clearing/batches"}]});}

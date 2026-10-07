@@ -1,0 +1,56 @@
+@page
+@model BankSwitch.Admin.Pages.Security.Terminals.IndexModel
+<h1>Terminal session keys</h1>
+<p>
+    Registered POS/ATM terminals and their current DUKPT-style key-derivation state. "Generate
+    session key" derives the next working key for the terminal via the HSM and rotates the key
+    serial number (KSN); only the resulting key-check-value (KCV) is shown - the derived key
+    itself never leaves the HSM.
+</p>
+@if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+{
+    <p class="danger">@Model.ErrorMessage</p>
+}
+@if (!string.IsNullOrWhiteSpace(Model.StatusMessage))
+{
+    <p>@Model.StatusMessage</p>
+}
+<table>
+    <thead><tr><th>Terminal ID</th><th>Source node</th><th>Key profile</th><th>KSN</th><th>KCV</th><th>Active</th><th>Last rotated</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var terminal in Model.Terminals)
+    {
+        <tr>
+            <td>@terminal.TerminalId</td>
+            <td>@terminal.SourceNodeId</td>
+            <td>@terminal.KeyProfile</td>
+            <td>@(string.IsNullOrEmpty(terminal.KeySerialNumber) ? "-" : terminal.KeySerialNumber)</td>
+            <td>@(string.IsNullOrEmpty(terminal.KeyCheckValue) ? "-" : terminal.KeyCheckValue)</td>
+            <td>@(terminal.IsActive ? "Yes" : "No")</td>
+            <td>@(terminal.LastRotatedAt?.ToString() ?? "-")</td>
+            <td>
+                <form method="post" asp-page-handler="GenerateSessionKey" style="display:inline">
+                    <input type="hidden" name="terminalId" value="@terminal.TerminalId" />
+                    <button type="submit">Generate session key</button>
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<h2>Register new terminal</h2>
+<form method="post" asp-page-handler="Register">
+    <div><label asp-for="Input.TerminalId"></label><input asp-for="Input.TerminalId" /></div>
+    <div>
+        <label asp-for="Input.SourceNodeId">Source node</label>
+        <select asp-for="Input.SourceNodeId">
+            @foreach (var node in Model.SourceNodes)
+            {
+                <option value="@node.NodeId">@node.NodeId - @node.Name</option>
+            }
+        </select>
+    </div>
+    <div><label asp-for="Input.KeyProfile">Key profile (base derivation key)</label><input asp-for="Input.KeyProfile" /></div>
+    <button type="submit">Register terminal</button>
+</form>

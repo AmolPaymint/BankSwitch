@@ -1,0 +1,462 @@
+[
+  {
+    "repository": "SqlIssuerCertificationRepository.cs",
+    "table": "IssuerCertificationStore",
+    "exists": true
+  },
+  {
+    "repository": "SqlNdcProtocolRepository.cs",
+    "table": "NdcDeviceStatusEvents",
+    "exists": true
+  },
+  {
+    "repository": "SqlNdcProtocolRepository.cs",
+    "table": "NdcDownloadArtifacts",
+    "exists": true
+  },
+  {
+    "repository": "SqlNdcProtocolRepository.cs",
+    "table": "NdcElectronicJournalEntries",
+    "exists": true
+  },
+  {
+    "repository": "SqlNdcProtocolRepository.cs",
+    "table": "NdcProtocolTraces",
+    "exists": true
+  },
+  {
+    "repository": "SqlNdcProtocolRepository.cs",
+    "table": "NdcTerminalSessions",
+    "exists": true
+  },
+  {
+    "repository": "SqlAcquiringCertificationRepository.cs",
+    "table": "AcquiringCertificationStore",
+    "exists": true
+  },
+  {
+    "repository": "SqlPosTerminalDrivingRepository.cs",
+    "table": "PosCashAtPosAcquiring",
+    "exists": true
+  },
+  {
+    "repository": "SqlPosTerminalDrivingRepository.cs",
+    "table": "PosContactlessTransactionFlows",
+    "exists": true
+  },
+  {
+    "repository": "SqlPosTerminalDrivingRepository.cs",
+    "table": "PosDeviceCommands",
+    "exists": true
+  },
+  {
+    "repository": "SqlPosTerminalDrivingRepository.cs",
+    "table": "PosKeyDownloadCertifications",
+    "exists": true
+  },
+  {
+    "repository": "SqlPosTerminalDrivingRepository.cs",
+    "table": "PosKeyDownloadSessions",
+    "exists": true
+  },
+  {
+    "repository": "SqlPosTerminalDrivingRepository.cs",
+    "table": "PosMerchantSettlementBatches",
+    "exists": true
+  },
+  {
+    "repository": "SqlPosTerminalDrivingRepository.cs",
+    "table": "PosMposEnrollments",
+    "exists": true
+  },
+  {
+    "repository": "SqlPosTerminalDrivingRepository.cs",
+    "table": "PosTerminalProfiles",
+    "exists": true
+  },
+  {
+    "repository": "SqlPosTerminalDrivingRepository.cs",
+    "table": "PosTipAdjustments",
+    "exists": true
+  },
+  {
+    "repository": "SqlAcquiringCertificationLabRepository.cs",
+    "table": "AcquiringCertificationLabStore",
+    "exists": true
+  },
+  {
+    "repository": "SqlKycRepository.cs",
+    "table": "AuthorizationHolds",
+    "exists": true
+  },
+  {
+    "repository": "SqlKycRepository.cs",
+    "table": "KycDocuments",
+    "exists": true
+  },
+  {
+    "repository": "SqlCardFeeRepository.cs",
+    "table": "CardFeeRules",
+    "exists": true
+  },
+  {
+    "repository": "SqlSwitchRepository.cs",
+    "table": "Fees",
+    "exists": true
+  },
+  {
+    "repository": "SqlSwitchRepository.cs",
+    "table": "Institutions",
+    "exists": true
+  },
+  {
+    "repository": "SqlSwitchRepository.cs",
+    "table": "ReversalWorkItems",
+    "exists": true
+  },
+  {
+    "repository": "SqlSwitchRepository.cs",
+    "table": "Routes",
+    "exists": true
+  },
+  {
+    "repository": "SqlSwitchRepository.cs",
+    "table": "SchemePermissions",
+    "exists": true
+  },
+  {
+    "repository": "SqlSwitchRepository.cs",
+    "table": "Schemes",
+    "exists": true
+  },
+  {
+    "repository": "SqlSwitchRepository.cs",
+    "table": "SinkNodes",
+    "exists": true
+  },
+  {
+    "repository": "SqlSwitchRepository.cs",
+    "table": "SourceNodes",
+    "exists": true
+  },
+  {
+    "repository": "SqlSwitchRepository.cs",
+    "table": "TransactionLogs",
+    "exists": true
+  },
+  {
+    "repository": "SqlPrepaidCmsRepository.cs",
+    "table": "CardProducts",
+    "exists": true
+  },
+  {
+    "repository": "SqlPrepaidCmsRepository.cs",
+    "table": "CmsTransactionLogs",
+    "exists": true
+  },
+  {
+    "repository": "SqlPrepaidCmsRepository.cs",
+    "table": "Customers",
+    "exists": true
+  },
+  {
+    "repository": "SqlPrepaidCmsRepository.cs",
+    "table": "LedgerEntries",
+    "exists": true
+  },
+  {
+    "repository": "SqlPrepaidCmsRepository.cs",
+    "table": "LimitProfiles",
+    "exists": true
+  },
+  {
+    "repository": "SqlPrepaidCmsRepository.cs",
+    "table": "PrepaidCards",
+    "exists": true
+  },
+  {
+    "repository": "SqlPrepaidCmsRepository.cs",
+    "table": "PrepaidPrograms",
+    "exists": true
+  },
+  {
+    "repository": "SqlPrepaidCmsRepository.cs",
+    "table": "WalletAccounts",
+    "exists": true
+  },
+  {
+    "repository": "SqlOperationalControlRepository.cs",
+    "table": "AdvancedLimitRules",
+    "exists": true
+  },
+  {
+    "repository": "SqlOperationalControlRepository.cs",
+    "table": "AgencyCreditLedgerEntries",
+    "exists": true
+  },
+  {
+    "repository": "SqlOperationalControlRepository.cs",
+    "table": "AgencyProfiles",
+    "exists": true
+  },
+  {
+    "repository": "SqlOperationalControlRepository.cs",
+    "table": "CardStockBatches",
+    "exists": true
+  },
+  {
+    "repository": "SqlOperationalControlRepository.cs",
+    "table": "CorporateBudgets",
+    "exists": true
+  },
+  {
+    "repository": "SqlOperationalControlRepository.cs",
+    "table": "CorporateDepartments",
+    "exists": true
+  },
+  {
+    "repository": "SqlOperationalControlRepository.cs",
+    "table": "CorporateEmployees",
+    "exists": true
+  },
+  {
+    "repository": "SqlOperationalControlRepository.cs",
+    "table": "CorporateProfiles",
+    "exists": true
+  },
+  {
+    "repository": "SqlOperationalControlRepository.cs",
+    "table": "NotificationMessages",
+    "exists": true
+  },
+  {
+    "repository": "SqlOperationalControlRepository.cs",
+    "table": "RiskRules",
+    "exists": true
+  },
+  {
+    "repository": "SqlOperationalControlRepository.cs",
+    "table": "StatementDocuments",
+    "exists": true
+  },
+  {
+    "repository": "SqlOperationalControlRepository.cs",
+    "table": "StatementLines",
+    "exists": true
+  },
+  {
+    "repository": "SqlPosAcquiringProductionRepository.cs",
+    "table": "PosCommandQueue",
+    "exists": true
+  },
+  {
+    "repository": "SqlPosAcquiringProductionRepository.cs",
+    "table": "PosEmvCertificationEvidence",
+    "exists": true
+  },
+  {
+    "repository": "SqlPosAcquiringProductionRepository.cs",
+    "table": "PosKeyCeremonies",
+    "exists": true
+  },
+  {
+    "repository": "SqlPosAcquiringProductionRepository.cs",
+    "table": "PosMdrRules",
+    "exists": true
+  },
+  {
+    "repository": "SqlPosAcquiringProductionRepository.cs",
+    "table": "PosMerchantSettlementPostings",
+    "exists": true
+  },
+  {
+    "repository": "SqlPosAcquiringProductionRepository.cs",
+    "table": "PosMerchants",
+    "exists": true
+  },
+  {
+    "repository": "SqlPosAcquiringProductionRepository.cs",
+    "table": "PosOfflineContactlessBatches",
+    "exists": true
+  },
+  {
+    "repository": "SqlPosAcquiringProductionRepository.cs",
+    "table": "PosOfflineContactlessTxns",
+    "exists": true
+  },
+  {
+    "repository": "SqlPosAcquiringProductionRepository.cs",
+    "table": "PosTerminalLifecycle",
+    "exists": true
+  },
+  {
+    "repository": "SqlFinancialOperationsRepository.cs",
+    "table": "FinancialOperations",
+    "exists": true
+  },
+  {
+    "repository": "SqlFinancialOperationsRepository.cs",
+    "table": "GlJournalEntries",
+    "exists": true
+  },
+  {
+    "repository": "SqlFinancialOperationsRepository.cs",
+    "table": "GlJournalLines",
+    "exists": true
+  },
+  {
+    "repository": "SqlFinancialOperationsRepository.cs",
+    "table": "ReconciliationExceptions",
+    "exists": true
+  },
+  {
+    "repository": "SqlFinancialOperationsRepository.cs",
+    "table": "SettlementBatches",
+    "exists": true
+  },
+  {
+    "repository": "SqlFinancialOperationsRepository.cs",
+    "table": "SettlementRecords",
+    "exists": true
+  },
+  {
+    "repository": "SqlFinancialOperationsRepository.cs",
+    "table": "SettlementStatementLines",
+    "exists": true
+  },
+  {
+    "repository": "SqlFinancialOperationsRepository.cs",
+    "table": "SettlementStatements",
+    "exists": true
+  },
+  {
+    "repository": "SqlEnterpriseConfigurationRepository.cs",
+    "table": "CertificateInventory",
+    "exists": true
+  },
+  {
+    "repository": "SqlEnterpriseConfigurationRepository.cs",
+    "table": "ConfigurationChangeItems",
+    "exists": true
+  },
+  {
+    "repository": "SqlEnterpriseConfigurationRepository.cs",
+    "table": "ConfigurationChangeRequests",
+    "exists": true
+  },
+  {
+    "repository": "SqlEnterpriseConfigurationRepository.cs",
+    "table": "ConfigurationDefinitions",
+    "exists": true
+  },
+  {
+    "repository": "SqlEnterpriseConfigurationRepository.cs",
+    "table": "ConfigurationDeployments",
+    "exists": true
+  },
+  {
+    "repository": "SqlEnterpriseConfigurationRepository.cs",
+    "table": "ConfigurationDomains",
+    "exists": true
+  },
+  {
+    "repository": "SqlEnterpriseConfigurationRepository.cs",
+    "table": "ConfigurationHistory",
+    "exists": true
+  },
+  {
+    "repository": "SqlEnterpriseConfigurationRepository.cs",
+    "table": "ConfigurationSnapshots",
+    "exists": true
+  },
+  {
+    "repository": "SqlEnterpriseConfigurationRepository.cs",
+    "table": "ConfigurationValues",
+    "exists": true
+  },
+  {
+    "repository": "SqlEnterpriseConfigurationRepository.cs",
+    "table": "FeatureFlags",
+    "exists": true
+  },
+  {
+    "repository": "SqlEnterpriseConfigurationRepository.cs",
+    "table": "SecretReferences",
+    "exists": true
+  },
+  {
+    "repository": "SqlEnterpriseProductionRepository.cs",
+    "table": "AmlScreeningRecords",
+    "exists": true
+  },
+  {
+    "repository": "SqlEnterpriseProductionRepository.cs",
+    "table": "AmlWatchlistEntries",
+    "exists": true
+  },
+  {
+    "repository": "SqlEnterpriseProductionRepository.cs",
+    "table": "ClusterNodeHeartbeats",
+    "exists": true
+  },
+  {
+    "repository": "SqlEnterpriseProductionRepository.cs",
+    "table": "CmsTransactionLogs",
+    "exists": true
+  },
+  {
+    "repository": "SqlEnterpriseProductionRepository.cs",
+    "table": "CryptoKeyProfiles",
+    "exists": true
+  },
+  {
+    "repository": "SqlEnterpriseProductionRepository.cs",
+    "table": "DataWarehouseExportJobs",
+    "exists": true
+  },
+  {
+    "repository": "SqlEnterpriseProductionRepository.cs",
+    "table": "DisasterRecoveryDrills",
+    "exists": true
+  },
+  {
+    "repository": "SqlEnterpriseProductionRepository.cs",
+    "table": "DisasterRecoveryPlans",
+    "exists": true
+  },
+  {
+    "repository": "SqlEnterpriseProductionRepository.cs",
+    "table": "FailoverEvents",
+    "exists": true
+  },
+  {
+    "repository": "SqlEnterpriseProductionRepository.cs",
+    "table": "FraudAlerts",
+    "exists": true
+  },
+  {
+    "repository": "SqlEnterpriseProductionRepository.cs",
+    "table": "FraudMonitoringEvents",
+    "exists": true
+  },
+  {
+    "repository": "SqlEnterpriseProductionRepository.cs",
+    "table": "RegulatoryReportLines",
+    "exists": true
+  },
+  {
+    "repository": "SqlEnterpriseProductionRepository.cs",
+    "table": "RegulatoryReports",
+    "exists": true
+  },
+  {
+    "repository": "SqlEnterpriseProductionRepository.cs",
+    "table": "SiemSecurityEvents",
+    "exists": true
+  },
+  {
+    "repository": "SqlEnterpriseProductionRepository.cs",
+    "table": "ThreeDsAuthenticationRecords",
+    "exists": true
+  }
+]

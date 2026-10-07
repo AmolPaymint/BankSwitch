@@ -1,0 +1,33 @@
+V22 Phase 1 Core Prepaid CMS static checks
+
+Added modules:
+- Program setup: PrepaidProgram + CreateProgramAsync + /api/cms/programs + dbo.PrepaidPrograms
+- Product setup: CardProduct + CreateProductAsync + /api/cms/products + dbo.CardProducts
+- Customer onboarding: CustomerProfile + OnboardCustomerAsync + /api/cms/customers + dbo.Customers
+- Card issuance: IssueCardAsync + SecureCardNumberGenerator + protected PAN token/hash + dbo.PrepaidCards
+- Card activation: ActivateCardAsync + status transition checks
+- Wallet/account ledger: WalletAccount + LedgerEntry + dbo.WalletAccounts + dbo.LedgerEntries
+- Basic top-up: TopUpAsync + /api/cms/cards/top-up
+- Basic authorization: CorePrepaidCmsService.AuthorizeAsync + TransactionProcessor CMS hook
+- Basic fee engine: FeeCalculator reused with product Default/TopUp/Purchase Fee IDs
+- Basic limit engine: LimitProfile + per-transaction/daily/monthly/max-balance/count checks
+- Transaction logging: CmsTransactionLog + dbo.CmsTransactionLogs + existing TransactionLog
+- Admin portal: /api/cms endpoints protected by RBAC policies
+
+Static compatibility checks:
+- TargetFrameworkVersion occurrences in active projects: 0
+- net4/net48 target occurrences in active csproj: 0
+- HintPath occurrences in active csproj: 0
+- packages.config occurrences: 0
+- System.Web references: 0
+- New SQL schema: db/002_core_prepaid_cms_phase1.sql
+
+Build note:
+- dotnet SDK is not available in this environment, so package was statically audited but not locally compiled.
+
+Computed source counts:
+csproj_count=10
+cs_file_count=84
+cms_reference_count=166
+legacy_target_framework=0
+hintpath=0

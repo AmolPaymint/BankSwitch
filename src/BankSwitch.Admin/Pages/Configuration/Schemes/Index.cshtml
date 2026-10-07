@@ -1,0 +1,20 @@
+@page
+@model BankSwitch.Admin.Pages.Configuration.Schemes.IndexModel
+<h1>Schemes &amp; permissions</h1>
+<p><a asp-page="/Configuration/Schemes/Edit">Add new scheme</a></p>
+<table>
+    <thead><tr><th>Name</th><th>Source node</th><th>Route (BIN)</th><th>Active</th><th>Permissions</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var scheme in Model.Schemes)
+    {
+        <tr>
+            <td>@scheme.Name</td>
+            <td>@(Model.SourceNodeNames.TryGetValue(scheme.SourceNodeId, out var src) ? src : scheme.SourceNodeId.ToString())</td>
+            <td>@(Model.RouteBinPrefixes.TryGetValue(scheme.RouteId, out var bin) ? bin : scheme.RouteId.ToString())</td>
+            <td>@(scheme.IsActive ? "Yes" : "No")</td>
+            <td>@scheme.Permissions.Count</td>
+            <td><a asp-page="/Configuration/Schemes/Edit" asp-route-id="@scheme.Id">Edit</a></td>
+        </tr>
+    }
+    </tbody>
+</table>

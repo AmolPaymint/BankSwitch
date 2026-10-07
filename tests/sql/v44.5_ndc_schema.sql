@@ -1,0 +1,10 @@
+SET NOCOUNT ON;
+IF OBJECT_ID('dbo.NdcTerminalSessions','U') IS NULL THROW 51000, 'NdcTerminalSessions missing', 1;
+IF OBJECT_ID('dbo.NdcProtocolTraces','U') IS NULL THROW 51000, 'NdcProtocolTraces missing', 1;
+IF OBJECT_ID('dbo.NdcDeviceStatusEvents','U') IS NULL THROW 51000, 'NdcDeviceStatusEvents missing', 1;
+IF OBJECT_ID('dbo.NdcDownloadArtifacts','U') IS NULL THROW 51000, 'NdcDownloadArtifacts missing', 1;
+IF OBJECT_ID('dbo.NdcElectronicJournalEntries','U') IS NULL THROW 51000, 'NdcElectronicJournalEntries missing', 1;
+IF NOT EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name='FK_NdcProtocolTraces_Session') THROW 51000, 'NDC trace FK missing', 1;
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name='IX_NdcProtocolTraces_Terminal_Time') THROW 51000, 'NDC trace index missing', 1;
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=OBJECT_ID('dbo.NdcTerminalSessions') AND name='RowVersion' AND system_type_id=189) THROW 51000, 'NDC session rowversion missing', 1;
+PRINT 'PASS: v44.5 NDC schema';

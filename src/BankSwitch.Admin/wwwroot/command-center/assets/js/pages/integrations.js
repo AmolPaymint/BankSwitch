@@ -1,0 +1,2 @@
+import { liveModule } from "../core/live-module.js";
+export async function render(root){return liveModule(root,{"eyebrow": "Enterprise Integrations", "title": "CBS & Enterprise Integration", "description": "Live connector and integration health from v39 services", "sources": [{"label": "Dashboard", "path": "/enterprise-integrations/dashboard"}, {"label": "Connectors", "path": "/enterprise-integrations/connectors"}]});}

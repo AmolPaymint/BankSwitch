@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Npgsql" />
+    <ProjectReference Include="..\BankSwitch.Application\BankSwitch.Application.csproj" />
+    <ProjectReference Include="..\BankSwitch.Domain\BankSwitch.Domain.csproj" />
+    <PackageReference Include="Microsoft.Data.SqlClient" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" />
+    <PackageReference Include="System.Diagnostics.DiagnosticSource" />
+    <!-- B5: Redis distributed cache -->
+    <PackageReference Include="StackExchange.Redis" />
+  </ItemGroup>
+</Project>

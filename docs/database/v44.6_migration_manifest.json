@@ -1,0 +1,207 @@
+[
+  {
+    "file": "001_production_schema.sql",
+    "sha256": "46425cdadc786ce621e7b96312a39609c87462e67da8c8f84af67881c51e8f8c",
+    "bytes": 9865
+  },
+  {
+    "file": "002_core_prepaid_cms_phase1.sql",
+    "sha256": "b14bb567b56c3eead93d78ac57d7a9100a2d135635e8f9a815cf4e9e28bb6e97",
+    "bytes": 7137
+  },
+  {
+    "file": "003_operational_control_phase2.sql",
+    "sha256": "d6f24b771cd6c7a565380aa82ec08599cb7bfe31826cdcb225534ab3899856d6",
+    "bytes": 11842
+  },
+  {
+    "file": "004_financial_operations_phase3.sql",
+    "sha256": "de063e8ba3d63d238d7e2bf480c831264c35f320ffb2aca923dd3b47a4dbc3f5",
+    "bytes": 9126
+  },
+  {
+    "file": "005_enterprise_production_phase4.sql",
+    "sha256": "47b5e81f672258b051eb4ed7e4dde5af7efa0b85a1a052e605b120dab855b996",
+    "bytes": 11699
+  },
+  {
+    "file": "006_tokenization_terminal_keys_institutions.sql",
+    "sha256": "1564e64a980fbfaaf48e13fd97466a9b33f87629a9081510604505e13f6d1642",
+    "bytes": 2756
+  },
+  {
+    "file": "007_card_fee_rules.sql",
+    "sha256": "d3f51db0334b8c72519eb3f4e45ac8f6eb088ca0e69dfbd86dd1718bd08c3af4",
+    "bytes": 1177
+  },
+  {
+    "file": "008_ledger_and_crypto_hardening.sql",
+    "sha256": "48b55bed5ce6ac954e432a738d9a9e5efcbbe6e3e57a3c5ea73fa8d3e9155eeb",
+    "bytes": 3908
+  },
+  {
+    "file": "009_eft_orchestration.sql",
+    "sha256": "ed94fa74ddf9ec706d869206223b5927ae4276c0fb978d2d80bc832cab01bdd6",
+    "bytes": 9320
+  },
+  {
+    "file": "010_card_lifecycle.sql",
+    "sha256": "fc408d78cd3900f4b68c7aa26b2db5e28c8c277a202f42fbe92cdf4c613346a1",
+    "bytes": 6991
+  },
+  {
+    "file": "011_monitoring_alerting.sql",
+    "sha256": "60553ab519cdbec3d477b98b8fbf36b7f15fc3940dbceda17656b97cda7b4f76",
+    "bytes": 3161
+  },
+  {
+    "file": "012_payment_switch_enhancements.sql",
+    "sha256": "d2814194e94a38a9527678b9ace299a4c0093bf7675987e35959f26f61c151c9",
+    "bytes": 4896
+  },
+  {
+    "file": "013_clearing_settlement_schema.sql",
+    "sha256": "886f636e156f9c94d90279e764eb8130bb0543d0327255004736e084f351ff3a",
+    "bytes": 4449
+  },
+  {
+    "file": "014_b2_eft_chargeback_dispute_reconciliation.sql",
+    "sha256": "33ec106b9d3d53bfa719c96e8b79be9f477082e6d6c144b0c72f34228a91fb9c",
+    "bytes": 13952
+  },
+  {
+    "file": "015_security_controls_schema.sql",
+    "sha256": "70338edb94520fbc562d779728d68a6fc521f4829966eea609fe253964722e24",
+    "bytes": 7135
+  },
+  {
+    "file": "016_financial_processing_b4.sql",
+    "sha256": "d956aa54b19ad98dbf1c34ce86100080f102d18aa98b56c5bd4daa9fac3cfb57",
+    "bytes": 4981
+  },
+  {
+    "file": "017_performance_optimization.sql",
+    "sha256": "33f0c986ba40dae24dc33c1b8387fa5e27f287991463ef5bad05dc33e9ef39c0",
+    "bytes": 9374
+  },
+  {
+    "file": "018_b7_compliance_schema.sql",
+    "sha256": "98927ae883ded782e09490e4708daaabac2a1ce5287762470dc4c34429439a0c",
+    "bytes": 10123
+  },
+  {
+    "file": "019_advanced_routing_criteria.sql",
+    "sha256": "cbb8c91af21980a99e0e7ce86b7db17a9b00a4763a80f3c835c40ad5e8cea7bd",
+    "bytes": 3125
+  },
+  {
+    "file": "020_debit_card_production_lifecycle.sql",
+    "sha256": "25952dfaffe9ce72d57ff74c85604e614998e562b79616c6af6ac879b7219506",
+    "bytes": 3640
+  },
+  {
+    "file": "021_network_settlement_clearing_gl.sql",
+    "sha256": "c022ac9d6d1829583cc4f9261ba17334df48f37cafa4a694c971277cfa06f025",
+    "bytes": 5041
+  },
+  {
+    "file": "022_advanced_reconciliation_odr_udir.sql",
+    "sha256": "4c565f6821d0131cf8f0d37c3c496c94c211ce961481e00d3be327d65fc945bc",
+    "bytes": 5560
+  },
+  {
+    "file": "023_network_dispute_exchange_odr_udir.sql",
+    "sha256": "2533edb0e06e2b34482df7eaea558ccbe35a9b74070cd47437f9da7f9a55cade",
+    "bytes": 3044
+  },
+  {
+    "file": "024_atm_driving_protocols.sql",
+    "sha256": "264b10f59f2ceb4dad1973a10bc1019c10b876d6575e544bb5138572827210e2",
+    "bytes": 5742
+  },
+  {
+    "file": "025_pos_mpos_ecommerce_terminal_driving.sql",
+    "sha256": "d11e8fec9ff96b63bf89b4790837d33fa6165a909c89b3a9b7fc94467dca6f84",
+    "bytes": 7527
+  },
+  {
+    "file": "026_pos_acquiring_production_core.sql",
+    "sha256": "c03d0ff4eeada74e91a7cdad7c6c04b44b214c21b5f64fefc7f5708b95fe3673",
+    "bytes": 7393
+  },
+  {
+    "file": "027_acquiring_certification_simulator.sql",
+    "sha256": "ae52fddda391c3501c45a388c21936a740a9b5fd1223d4cbfd3aa4454dd52e19",
+    "bytes": 6101
+  },
+  {
+    "file": "028_acquiring_certification_lab_extensions.sql",
+    "sha256": "2e42347bc2c796843098e8391658466a3bb4222a800c79e8342d43536b0305d9",
+    "bytes": 5060
+  },
+  {
+    "file": "029_issuer_certification_full_lab.sql",
+    "sha256": "66af9477dec2ad951caa3091948c68c6c05b759635b8b7ab5f08971ac997347e",
+    "bytes": 6673
+  },
+  {
+    "file": "030_real_hsm_key_management_production_core.sql",
+    "sha256": "d0b9c821b818f4c961f5b860c70cf3f820c48360ba9b9cddcd4084b67600bb00",
+    "bytes": 4464
+  },
+  {
+    "file": "031_real_card_network_host_integration_core.sql",
+    "sha256": "1e2990896a3592c619f584ae29a6fc77e33419f0836278edeec1599b99f17e5e",
+    "bytes": 4689
+  },
+  {
+    "file": "032_core_banking_enterprise_integration_core.sql",
+    "sha256": "ee4818541bab5e2f07d0430b3ecbe21f56be0f74a78f6e173aad9ac87479bfa3",
+    "bytes": 3344
+  },
+  {
+    "file": "033_operations_command_center_sla_automation.sql",
+    "sha256": "cb33d2e2af07c3ed27a3228f27efd4a49e27347a558fb3552d4821f23b36cb67",
+    "bytes": 6989
+  },
+  {
+    "file": "034_regulatory_compliance_audit_evidence_pack.sql",
+    "sha256": "53fe8d57c90a54e361da4107727ba8558f465d73ca41f9d7026e3304b2e588b2",
+    "bytes": 5990
+  },
+  {
+    "file": "035_realtime_fraud_risk_aml_production_core.sql",
+    "sha256": "6820e829f8b3ba57491927b93d1305804d8cbb6f2331d0fe3329acbb6f562bcc",
+    "bytes": 4907
+  },
+  {
+    "file": "036_persistent_pos_terminal_driving_repository.sql",
+    "sha256": "178ceac662d0fe4bc300bae7a284c31fb419f78aa2014481f75a1c02f6bcae48",
+    "bytes": 7490
+  },
+  {
+    "file": "037_repository_persistence_data_integrity_hardening.sql",
+    "sha256": "321979ee268d6dc5ba828c20059f75c9e5afdbbef5a19fe90c14cd45c0a2488c",
+    "bytes": 6886
+  },
+  {
+    "file": "038_enterprise_configuration_control_plane.sql",
+    "sha256": "1dea1828374d1d48f642a880b7f7214ddc282373ba96163324db86f1e6e27e30",
+    "bytes": 21810
+  },
+  {
+    "file": "039_enterprise_settings_completeness_runtime_validation.sql",
+    "sha256": "6f7d2072a2e12cd6cf852fb08143ce3af0de627ccee6e47f89ce88199410c0d8",
+    "bytes": 23347
+  },
+  {
+    "file": "040_production_ndc_ndcplus_atm_protocol_engine.sql",
+    "sha256": "efd5ff72d0b64ef0971196f34dc8312af916778d45ce953d4839c4ccc16a29f7",
+    "bytes": 4464
+  },
+  {
+    "file": "041_canonical_sql_server_schema_referential_integrity_hardening.sql",
+    "sha256": "b1d0ddbb3496ef5a17591ea14f56c6273e56302fce8a72df67135bc8ad2d5ee9",
+    "bytes": 71661
+  }
+]

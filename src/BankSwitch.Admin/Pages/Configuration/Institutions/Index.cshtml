@@ -1,0 +1,22 @@
+@page
+@model BankSwitch.Admin.Pages.Configuration.Institutions.IndexModel
+<h1>Institutions</h1>
+<p>Participating acquiring/issuing institutions. Source and sink nodes can be linked to an institution for grouping and reporting.</p>
+<p><a asp-page="/Configuration/Institutions/Edit">Add new institution</a></p>
+<table>
+    <thead><tr><th>Code</th><th>Name</th><th>Type</th><th>Country</th><th>Currency</th><th>Active</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var institution in Model.Institutions)
+    {
+        <tr>
+            <td>@institution.Code</td>
+            <td>@institution.Name</td>
+            <td>@institution.Type</td>
+            <td>@institution.CountryCode</td>
+            <td>@institution.DefaultCurrencyCode</td>
+            <td>@(institution.IsActive ? "Yes" : "No")</td>
+            <td><a asp-page="/Configuration/Institutions/Edit" asp-route-id="@institution.Id">Edit</a></td>
+        </tr>
+    }
+    </tbody>
+</table>

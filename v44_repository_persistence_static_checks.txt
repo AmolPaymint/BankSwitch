@@ -1,0 +1,23 @@
+BankSwitch v44 Repository Persistence & Data Integrity Hardening - static verification checklist
+
+Expected production mappings in BankSwitch.Admin/Program.cs:
+  IPosAcquiringProductionRepository -> SqlPosAcquiringProductionRepository
+  IKycRepository -> SqlKycRepository
+  IAcquiringCertificationRepository -> SqlAcquiringCertificationRepository
+  IAcquiringCertificationLabRepository -> SqlAcquiringCertificationLabRepository
+  IIssuerCertificationRepository -> SqlIssuerCertificationRepository
+
+Expected test/simulation mappings:
+  InMemoryPosAcquiringProductionRepository
+  InMemoryKycRepository
+  InMemoryAcquiringCertificationRepository
+  InMemoryAcquiringCertificationLabRepository
+  InMemoryIssuerCertificationRepository
+
+Production guard:
+  ASPNETCORE_ENVIRONMENT=Production requires Repository:Provider=SqlServer.
+
+Migration:
+  db/037_repository_persistence_data_integrity_hardening.sql
+
+Note: dotnet SDK was unavailable in the packaging environment, therefore this release includes static validation but not an executed dotnet build.

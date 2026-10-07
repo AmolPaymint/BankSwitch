@@ -1,0 +1,30 @@
+@page "/CommandCenter"
+@model BankSwitch.Admin.Pages.CommandCenter.IndexModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="dark light" />
+  <title>Paymint BankSwitch Enterprise Command Center</title>
+  <link rel="stylesheet" href="~/command-center/assets/css/design-system.css" asp-append-version="true" />
+  <link rel="stylesheet" href="~/command-center/assets/css/app.css" asp-append-version="true" />
+</head>
+<body data-bs-version="v44.3" data-bs-environment="@Model.EnvironmentName" data-bs-api-base="/api" data-bs-command-center-api="/api/command-center" data-bs-control-plane-api="/api/settings" data-bs-realtime-hub="/hubs/command-center">
+  <a class="skip-link" href="#page-root">Skip to main content</a>
+  <noscript><div class="noscript-banner">This application requires JavaScript.</div></noscript>
+  <div id="app-shell" class="app-shell">
+    <aside id="sidebar" class="sidebar" aria-label="Primary navigation"></aside>
+    <main class="main">
+      <header id="topbar" class="topbar" aria-label="Command Center toolbar"></header>
+      <section id="page-root" class="page-root" tabindex="-1" aria-live="polite"></section>
+    </main>
+  </div>
+  <div id="toast-host" class="toast-host" role="status" aria-live="polite" aria-atomic="false"></div>
+  <div id="notification-drawer-host"></div>
+  <script type="module" src="~/command-center/assets/js/main.js" asp-append-version="true"></script>
+</body>
+</html>

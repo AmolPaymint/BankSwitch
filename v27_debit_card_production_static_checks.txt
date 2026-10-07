@@ -1,0 +1,26 @@
+V27 Debit Card Production Lifecycle static review
+
+Added RFP Card Lifecycle gap coverage:
+- Full debit card production workflow: DebitCardProductionOrder + status model + API endpoints.
+- Card embossing file generation: GenerateEmbossingFileAsync creates encrypted bureau payload and SHA-256 hash.
+- PIN mailer integration: GeneratePinMailerFileAsync creates PIN-reference payload without clear PIN export.
+- Personalization bureau integration: IPersonalizationBureauClient adapter and stub implementation.
+- Instant card stock branch workflow: DebitCardBranchStockItem + branch assignment service.
+- Virtual debit card complete workflow: IssueVirtualDebitCardAsync reuses CMS issue path and validates virtual product.
+- Full hotlist propagation to networks: ICardNetworkHotlistClient adapters for Visa, Mastercard, RuPay, NFS, Amex, Discover, JCB and Diners.
+
+Build status:
+- Static file generation completed.
+- .NET SDK is not installed in the sandbox, so dotnet restore/build could not be executed here.
+
+Files added:
+- src/BankSwitch.Domain/DebitCardProductionEntities.cs
+- src/BankSwitch.Application/DebitCardProductionAbstractions.cs
+- src/BankSwitch.Application/DebitCardProductionService.cs
+- src/BankSwitch.Infrastructure/InMemoryDebitCardProductionRepository.cs
+- src/BankSwitch.Admin/Endpoints/DebitCardProductionEndpoints.cs
+- db/020_debit_card_production_lifecycle.sql
+- docs/V27_DEBIT_CARD_PRODUCTION_LIFECYCLE.md
+
+Files modified:
+- src/BankSwitch.Admin/Program.cs

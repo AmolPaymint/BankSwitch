@@ -1,0 +1,2 @@
+import { liveModule } from "../core/live-module.js";
+export async function render(root){return liveModule(root,{"eyebrow": "POS / Merchant Operations", "title": "POS Acquiring & Terminal Driving", "description": "Live POS terminal, merchant, command and EMV evidence data", "sources": [{"label": "POS Terminals", "path": "/pos-driving/terminals"}, {"label": "Merchants", "path": "/pos-acquiring/merchants"}, {"label": "Pending Commands", "path": "/pos-acquiring/commands/pending"}, {"label": "EMV Evidence", "path": "/pos-acquiring/emv-evidence"}]});}

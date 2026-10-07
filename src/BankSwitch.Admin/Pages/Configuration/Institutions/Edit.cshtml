@@ -1,0 +1,21 @@
+@page "{id:guid?}"
+@model BankSwitch.Admin.Pages.Configuration.Institutions.EditModel
+<h1>@(Model.Id.HasValue ? "Edit institution" : "Add institution")</h1>
+@if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+{
+    <p class="danger">@Model.ErrorMessage</p>
+}
+<form method="post">
+    <div><label asp-for="Input.Code"></label><input asp-for="Input.Code" /></div>
+    <div><label asp-for="Input.Name"></label><input asp-for="Input.Name" /></div>
+    <div>
+        <label asp-for="Input.Type"></label>
+        <select asp-for="Input.Type" asp-items="Html.GetEnumSelectList<BankSwitch.Domain.InstitutionType>()"></select>
+    </div>
+    <div><label asp-for="Input.CountryCode">Country code (ISO 2-letter)</label><input asp-for="Input.CountryCode" maxlength="2" /></div>
+    <div><label asp-for="Input.DefaultCurrencyCode">Default currency (ISO 3-letter)</label><input asp-for="Input.DefaultCurrencyCode" maxlength="3" /></div>
+    <div><label asp-for="Input.IsActive"></label><input asp-for="Input.IsActive" type="checkbox" style="width:auto" /></div>
+
+    <button type="submit">Save</button>
+    <a asp-page="/Configuration/Institutions/Index">Cancel</a>
+</form>

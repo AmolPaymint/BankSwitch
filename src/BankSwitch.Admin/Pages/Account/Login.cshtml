@@ -1,0 +1,13 @@
+@page
+@model BankSwitch.Admin.Pages.Account.LoginModel
+<h1>Admin login</h1>
+@if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+{
+    <p class="danger">@Model.ErrorMessage</p>
+}
+<form method="post">
+    <div><label asp-for="Input.Username"></label><input asp-for="Input.Username" autocomplete="username" /></div>
+    <div><label asp-for="Input.Password"></label><input asp-for="Input.Password" type="password" autocomplete="current-password" /></div>
+    <div><label asp-for="Input.MfaCode">MFA code</label><input asp-for="Input.MfaCode" autocomplete="one-time-code" /></div>
+    <button type="submit">Sign in</button>
+</form>

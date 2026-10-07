@@ -1,0 +1,54 @@
+@page
+@model BankSwitch.Admin.Pages.Security.Tokens.IndexModel
+@using BankSwitch.Domain
+<h1>Card-on-file tokens (CoFT)</h1>
+<p>
+    Tokens are issued via <code>POST /api/cms/tokenization/tokens</code> for merchant card-on-file
+    storage (recurring billing, installments, unscheduled merchant-initiated transactions). The
+    underlying PAN is never shown here - only the masked PAN and token status.
+</p>
+@if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+{
+    <p class="danger">@Model.ErrorMessage</p>
+}
+<table>
+    <thead><tr><th>Token</th><th>Masked PAN</th><th>Expiry</th><th>Merchant</th><th>Source node</th><th>Status</th><th>Created</th><th>Last used</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var token in Model.Tokens)
+    {
+        <tr>
+            <td>@token.Token</td>
+            <td>@token.MaskedPan</td>
+            <td>@token.ExpiryMonth.ToString("00")/@token.ExpiryYear</td>
+            <td>@token.MerchantId</td>
+            <td>@token.SourceNodeId</td>
+            <td>@token.Status</td>
+            <td>@token.CreatedAt</td>
+            <td>@(token.LastUsedAt?.ToString() ?? "-")</td>
+            <td>
+                @if (token.Status != CardTokenStatus.Deleted)
+                {
+                    @if (token.Status == CardTokenStatus.Active)
+                    {
+                        <form method="post" asp-page-handler="Suspend" style="display:inline">
+                            <input type="hidden" name="token" value="@token.Token" />
+                            <button type="submit">Suspend</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <form method="post" asp-page-handler="Resume" style="display:inline">
+                            <input type="hidden" name="token" value="@token.Token" />
+                            <button type="submit">Resume</button>
+                        </form>
+                    }
+                    <form method="post" asp-page-handler="Delete" style="display:inline">
+                        <input type="hidden" name="token" value="@token.Token" />
+                        <button type="submit">Delete</button>
+                    </form>
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

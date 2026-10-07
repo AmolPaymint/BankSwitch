@@ -1,0 +1,25 @@
+@page
+@model BankSwitch.Admin.Pages.Configuration.SourceNodes.IndexModel
+<h1>Source nodes</h1>
+<p><a asp-page="/Configuration/SourceNodes/Edit">Add new source node</a></p>
+@if (!string.IsNullOrWhiteSpace(Model.StatusMessage))
+{
+    <p>@Model.StatusMessage</p>
+}
+<table>
+    <thead><tr><th>Node ID</th><th>Name</th><th>Active</th><th>TPS limit</th><th>BIN ranges</th><th>Key profile</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var node in Model.Nodes)
+    {
+        <tr>
+            <td>@node.NodeId</td>
+            <td>@node.Name</td>
+            <td>@(node.IsActive ? "Yes" : "No")</td>
+            <td>@node.Limits.TpsLimit</td>
+            <td>@string.Join(", ", node.AllowedBinRanges)</td>
+            <td>@node.KeyProfile</td>
+            <td><a asp-page="/Configuration/SourceNodes/Edit" asp-route-id="@node.Id">Edit</a></td>
+        </tr>
+    }
+    </tbody>
+</table>

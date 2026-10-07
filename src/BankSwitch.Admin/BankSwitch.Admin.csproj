@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web"><PropertyGroup>  <UserSecretsId>9d185633-0c39-4dc1-a5de-5dbdd7701688</UserSecretsId>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Npgsql" />
+    <ProjectReference Include="..\BankSwitch.Application\BankSwitch.Application.csproj" />
+    <ProjectReference Include="..\BankSwitch.Domain\BankSwitch.Domain.csproj" />
+    <ProjectReference Include="..\BankSwitch.Infrastructure\BankSwitch.Infrastructure.csproj" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
+    <PackageReference Include="Microsoft.Data.SqlClient" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" />
+    <PackageReference Include="Serilog.AspNetCore" />
+    <PackageReference Include="Serilog.Sinks.Console" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="appsettings.Production.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

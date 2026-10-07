@@ -1,0 +1,87 @@
+groups:
+  - name: bankswitch.performance
+    interval: 30s
+    rules:
+
+      # Alert when TPS drops below 80% of target for 2 minutes
+      - alert: BankSwitchTpsDrop
+        expr: |
+          rate(bankswitch_transactions_total[1m]) < 800
+        for: 2m
+        labels:
+          severity: critical
+          team: platform
+        annotations:
+          summary: "BankSwitch TPS critically low"
+          description: "TPS is {{ humanize $value }}/s — below 800 TPS threshold for 2 minutes."
+          runbook: "https://wiki.internal/runbooks/bankswitch/tps-drop"
+
+      # P99 latency SLA breach (target: <500ms)
+      - alert: BankSwitchP99LatencyHigh
+        expr: |
+          histogram_quantile(0.99, rate(bankswitch_authorization_latency_ms_bucket[5m])) > 500
+        for: 5m
+        labels:
+          severity: critical
+          team: platform
+        annotations:
+          summary: "BankSwitch authorization P99 latency SLA breach"
+          description: "P99 latency is {{ humanize $value }}ms — exceeds 500ms SLA."
+
+      # Error rate above 1%
+      - alert: BankSwitchHighErrorRate
+        expr: |
+          rate(bankswitch_transactions_total{response_code!="00"}[5m])
+          /
+          rate(bankswitch_transactions_total[5m]) > 0.01
+        for: 3m
+        labels:
+          severity: warning
+          team: platform
+        annotations:
+          summary: "BankSwitch transaction error rate elevated"
+          description: "Error rate is {{ humanizePercentage $value }} — above 1% threshold."
+
+  - name: bankswitch.security
+    interval: 60s
+    rules:
+
+      # Key rotation overdue (published as SIEM event / Prometheus metric)
+      - alert: BankSwitchKeyRotationOverdue
+        expr: |
+          bankswitch_key_rotation_overdue_total > 0
+        for: 0m
+        labels:
+          severity: critical
+          team: security
+        annotations:
+          summary: "Cryptographic key rotation overdue"
+          description: "{{ $value }} key profile(s) past rotation deadline. Immediate action required (PCI DSS Req 3.6)."
+
+  - name: bankswitch.infrastructure
+    interval: 30s
+    rules:
+
+      # Health check failing
+      - alert: BankSwitchHealthCheckFailing
+        expr: |
+          up{job=~"bankswitch.*"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          team: platform
+        annotations:
+          summary: "BankSwitch service health check failing"
+          description: "Service {{ $labels.job }} on {{ $labels.instance }} is DOWN."
+
+      # Queue depth warning
+      - alert: BankSwitchQueueDepthHigh
+        expr: |
+          bankswitch_queue_depth > 2000
+        for: 2m
+        labels:
+          severity: warning
+          team: platform
+        annotations:
+          summary: "BankSwitch transaction queue depth elevated"
+          description: "Queue depth is {{ humanize $value }} — above 2000 warning threshold. Consumers may be falling behind."

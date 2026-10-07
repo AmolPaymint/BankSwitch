@@ -1,0 +1,7 @@
+V37 static implementation summary
+- Application module: HsmKeyManagementProductionCore.cs
+- Admin endpoints: HsmKeyManagementEndpoints.cs
+- API prefix: /api/hsm/key-management
+- Migration: db/030_real_hsm_key_management_production_core.sql
+- Documentation: V37_REAL_HSM_KEY_MANAGEMENT_PRODUCTION_CORE.md
+- Build not executed in sandbox unless .NET SDK is present.

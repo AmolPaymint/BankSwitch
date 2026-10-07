@@ -1,0 +1,62 @@
+# ============================================================
+# BankSwitch v25 — Production Overrides
+# ============================================================
+# Applied on top of values.yaml for production deployments.
+# Usage: helm upgrade bankswitch ./helm/bankswitch -f values.yaml -f values.production.yaml
+
+engine:
+  replicaCount: 3    # 3 active nodes for 3000+ TPS
+
+  resources:
+    requests:
+      cpu: 1000m
+      memory: 1Gi
+    limits:
+      cpu: 4000m
+      memory: 2Gi
+
+  autoscaling:
+    minReplicas: 3
+    maxReplicas: 20
+    targetCPUUtilizationPercentage: 65
+
+  configuration:
+    StandIn__Enabled: "false"
+    Hsm__Mode: "Http"
+    Database__MaxPoolSize: "300"
+    Database__CommandTimeoutSeconds: "15"
+
+admin:
+  replicaCount: 2
+
+  ingress:
+    hosts:
+      - host: admin.bankswitch.prod.example.com
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: bankswitch-admin-prod-tls
+        hosts:
+          - admin.bankswitch.prod.example.com
+
+monitoring:
+  serviceMonitor:
+    interval: 10s
+
+networkPolicy:
+  enabled: true
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1001
+  runAsGroup: 1001
+  fsGroup: 1001
+  seccompProfile:
+    type: RuntimeDefault
+
+containerSecurityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop: [ALL]

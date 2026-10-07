@@ -1,0 +1,8 @@
+V40 static checks
+- Added BankSwitch.Application/OperationsCommandCenterCore.cs
+- Added BankSwitch.Admin/Endpoints/OperationsCommandCenterEndpoints.cs
+- Registered IOperationsCommandCenterRepository and IOperationsCommandCenterService in Program.cs
+- Mapped /api/operations-command-center endpoints in Program.cs
+- Added db/033_operations_command_center_sla_automation.sql
+- Added V40_OPERATIONS_COMMAND_CENTER_SLA_AUTOMATION.md
+- Build not executed: dotnet SDK unavailable in sandbox

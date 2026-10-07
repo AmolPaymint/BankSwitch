@@ -1,0 +1,62 @@
+@page
+@model BankSwitch.Admin.Pages.Monitoring.IndexModel
+<h1>Monitoring</h1>
+
+<h2>Application health</h2>
+<p>
+    Overall cluster status: <strong>@Model.ApplicationHealth.Cluster.OverallStatus</strong>
+    (@Model.ApplicationHealth.Cluster.HealthyNodes healthy, @Model.ApplicationHealth.Cluster.DegradedNodes degraded,
+    @Model.ApplicationHealth.Cluster.UnhealthyNodes unhealthy, @Model.ApplicationHealth.Cluster.OfflineNodes offline)
+</p>
+<p>
+    Last @Model.ApplicationHealth.Window.TotalHours.ToString("0") hour(s): @Model.ApplicationHealth.TransactionCount transactions,
+    @Model.ApplicationHealth.ApprovedCount approved, @Model.ApplicationHealth.DeclinedCount declined,
+    average latency @Model.ApplicationHealth.AverageLatencyMilliseconds.ToString("0") ms.
+</p>
+<table>
+    <thead><tr><th>Node</th><th>Instance</th><th>Role</th><th>Region / AZ</th><th>Status</th><th>CPU %</th><th>Memory %</th><th>Active connections</th><th>Last heartbeat</th></tr></thead>
+    <tbody>
+    @if (Model.ApplicationHealth.Cluster.Nodes.Count == 0)
+    {
+        <tr><td colspan="9">No cluster heartbeats received yet. The switch engine reports a heartbeat via <code>POST /api/cms/enterprise/cluster/heartbeat</code> on the interval configured by <code>EnterpriseProduction:HeartbeatIntervalSeconds</code>.</td></tr>
+    }
+    @foreach (var node in Model.ApplicationHealth.Cluster.Nodes)
+    {
+        <tr>
+            <td>@node.NodeName</td>
+            <td>@node.InstanceId</td>
+            <td>@node.Role</td>
+            <td>@node.Region / @node.AvailabilityZone</td>
+            <td>@node.HealthStatus</td>
+            <td>@node.CpuPercent</td>
+            <td>@node.MemoryPercent</td>
+            <td>@node.ActiveConnections</td>
+            <td>@node.LastHeartbeatAt</td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<h2>Device / hardware health (source &amp; sink nodes)</h2>
+<p>Status is derived from configuration (active flag, TPS limit) and transaction activity over the last hour.</p>
+<table>
+    <thead><tr><th>Node ID</th><th>Name</th><th>Direction</th><th>Configured active</th><th>TPS limit</th><th>Txns (1h)</th><th>Declined (1h)</th><th>Avg latency (ms)</th><th>Last transaction</th><th>Status</th></tr></thead>
+    <tbody>
+    @foreach (var device in Model.Devices)
+    {
+        <tr>
+            <td>@device.NodeId</td>
+            <td>@device.Name</td>
+            <td>@device.Direction</td>
+            <td>@(device.ConfiguredActive ? "Yes" : "No")</td>
+            <td>@device.TpsLimit</td>
+            <td>@device.TransactionCount</td>
+            <td>@device.DeclinedCount</td>
+            <td>@device.AverageLatencyMilliseconds.ToString("0")</td>
+            <td>@(device.LastTransactionAt?.ToString() ?? "-")</td>
+            <td>@device.Status</td>
+        </tr>
+    }
+    </tbody>
+</table>
+<p><a asp-page="/Reports/Transactions">View transaction in/out report</a></p>

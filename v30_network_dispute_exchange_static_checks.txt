@@ -1,0 +1,7 @@
+V30 static review
+- Added domain model for network dispute exchange files and records.
+- Added Visa/Mastercard/NPCI/RBI ODR/NPCI UDIR adapters.
+- Added transport gateway abstraction and simulated gateways.
+- Added API endpoints under /api/disputes/network-exchange.
+- Added migration 023_network_dispute_exchange_odr_udir.sql.
+- Build not executed in sandbox because dotnet SDK is unavailable.

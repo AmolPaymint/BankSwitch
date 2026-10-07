@@ -1,0 +1,2 @@
+import { liveModule } from "../core/live-module.js";
+export async function render(root){return liveModule(root,{"eyebrow": "Fraud / Risk / AML", "title": "Real-Time Risk & AML", "description": "Live risk rules, cases, models and operational dashboard", "sources": [{"label": "Dashboard", "path": "/risk-fraud-aml/dashboard"}, {"label": "Rules", "path": "/risk-fraud-aml/rules?includeDisabled=false"}, {"label": "Cases", "path": "/risk-fraud-aml/cases"}, {"label": "Models", "path": "/risk-fraud-aml/models"}]});}

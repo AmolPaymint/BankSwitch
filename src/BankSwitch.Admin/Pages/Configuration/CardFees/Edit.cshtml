@@ -1,0 +1,41 @@
+@page "{id:guid?}"
+@model BankSwitch.Admin.Pages.Configuration.CardFees.EditModel
+<h1>@(Model.Id.HasValue ? "Edit card fee/waiver rule" : "Add card fee/waiver rule")</h1>
+@if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+{
+    <p class="danger">@Model.ErrorMessage</p>
+}
+<form method="post">
+    <div>
+        <label asp-for="Input.FeeType">Fee type</label>
+        <select asp-for="Input.FeeType" asp-items="Html.GetEnumSelectList<BankSwitch.Domain.CardFeeType>()"></select>
+    </div>
+    <div>
+        <label asp-for="Input.ScopeType">Scope</label>
+        <select asp-for="Input.ScopeType" asp-items="Html.GetEnumSelectList<BankSwitch.Domain.CardFeeScopeType>()"></select>
+    </div>
+    <div>
+        <label asp-for="Input.ScopeValue">Scope value</label>
+        <input asp-for="Input.ScopeValue" />
+        <p>BIN: 4-8 numeric digits. Account scheme: 2-20 character network code (e.g. VISA, MASTERCARD, VERVE). Card: the card's ID (GUID).</p>
+    </div>
+    <div>
+        <label asp-for="Input.IsWaiver">Waiver (fee is zero for matching cards)</label>
+        <input asp-for="Input.IsWaiver" type="checkbox" style="width:auto" />
+    </div>
+    <div>
+        <label asp-for="Input.FeeId">Fee (required unless waiver)</label>
+        <select asp-for="Input.FeeId">
+            <option value="">(none)</option>
+            @foreach (var fee in Model.Fees)
+            {
+                <option value="@fee.Id">@fee.Name</option>
+            }
+        </select>
+    </div>
+    <div><label asp-for="Input.Description"></label><input asp-for="Input.Description" /></div>
+    <div><label asp-for="Input.IsActive"></label><input asp-for="Input.IsActive" type="checkbox" style="width:auto" /></div>
+
+    <button type="submit">Save</button>
+    <a asp-page="/Configuration/CardFees/Index">Cancel</a>
+</form>

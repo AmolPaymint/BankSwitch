@@ -1,0 +1,53 @@
+@page
+@model BankSwitch.Admin.Pages.Configuration.IndexModel
+<h1>Switch configuration</h1>
+<p>GUI-based configuration and parameter setting for the core EFT switch. Changes take effect immediately and are written to the admin audit log.</p>
+<table>
+    <thead><tr><th>Area</th><th>Count</th><th>Description</th></tr></thead>
+    <tbody>
+        <tr>
+            <td><a asp-page="/Configuration/SourceNodes/Index">Source nodes</a></td>
+            <td>@Model.SourceNodeCount</td>
+            <td>Acquirers/issuers permitted to send ISO 8583 messages into the switch, with security profile, TPS/amount limits, permitted MTIs/channels, and BIN ranges.</td>
+        </tr>
+        <tr>
+            <td><a asp-page="/Configuration/SinkNodes/Index">Sink nodes</a></td>
+            <td>@Model.SinkNodeCount</td>
+            <td>Downstream processors/FEPs the switch forwards transactions to, including host/port and security profile.</td>
+        </tr>
+        <tr>
+            <td><a asp-page="/Configuration/Routes/Index">Routes (BIN routing)</a></td>
+            <td>@Model.RouteCount</td>
+            <td>Maps card BIN prefixes to a sink node.</td>
+        </tr>
+        <tr>
+            <td><a asp-page="/Configuration/Fees/Index">Fees</a></td>
+            <td>@Model.FeeCount</td>
+            <td>Flat/percentage fee definitions with minimum and maximum bounds, referenced by scheme permissions.</td>
+        </tr>
+        <tr>
+            <td><a asp-page="/Configuration/Schemes/Index">Schemes &amp; permissions</a></td>
+            <td>@Model.SchemeCount</td>
+            <td>Authorizes a source node to use a route for specific transaction-type/channel combinations, each with an applicable fee.</td>
+        </tr>
+        <tr>
+            <td><a asp-page="/Configuration/Institutions/Index">Institutions</a></td>
+            <td>@Model.InstitutionCount</td>
+            <td>Participating acquiring/issuing institutions. Source and sink nodes can be linked to an institution by code for multi-institutional grouping and reporting.</td>
+        </tr>
+        <tr>
+            <td><a asp-page="/Configuration/CardFees/Index">Card-lifecycle fees &amp; waivers</a></td>
+            <td>@Model.CardFeeRuleCount</td>
+            <td>Issuance, replacement, upgrade, RePIN, annual maintenance, and add-on card fees and waivers, configurable BIN-wise, account-scheme-wise, or card-wise.</td>
+        </tr>
+    </tbody>
+</table>
+<p>
+    Card-on-file tokenization (CoFT) and dynamic terminal session keys are managed under
+    <a asp-page="/Security/Tokens/Index">Security</a>.
+</p>
+<p>
+    CMS programs, products, limit profiles, agencies/corporates, risk rules, settlement and enterprise-production parameters are
+    managed via the <code>/api/cms/*</code> JSON APIs. The repository &rarr; service &rarr; Razor Page pattern used here can be
+    extended to add GUI forms for those areas.
+</p>

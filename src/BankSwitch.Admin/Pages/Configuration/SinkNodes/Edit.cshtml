@@ -1,0 +1,48 @@
+@page "{id:guid?}"
+@model BankSwitch.Admin.Pages.Configuration.SinkNodes.EditModel
+<h1>@(Model.Id.HasValue ? "Edit sink node" : "Add sink node")</h1>
+@if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+{
+    <p class="danger">@Model.ErrorMessage</p>
+}
+<form method="post">
+    <div><label asp-for="Input.NodeId"></label><input asp-for="Input.NodeId" /></div>
+    <div><label asp-for="Input.Name"></label><input asp-for="Input.Name" /></div>
+    <div><label asp-for="Input.Host"></label><input asp-for="Input.Host" /></div>
+    <div><label asp-for="Input.Port"></label><input asp-for="Input.Port" type="number" /></div>
+    <div><label asp-for="Input.IsActive"></label><input asp-for="Input.IsActive" type="checkbox" style="width:auto" /></div>
+
+    <h2>Security profile</h2>
+    <div><label asp-for="Input.RequireMtls"></label><input asp-for="Input.RequireMtls" type="checkbox" style="width:auto" /></div>
+    <div><label asp-for="Input.RequirePrivateNetwork"></label><input asp-for="Input.RequirePrivateNetwork" type="checkbox" style="width:auto" /></div>
+    <div><label asp-for="Input.AllowedCidrs">Allowed CIDRs (semicolon or comma separated)</label><input asp-for="Input.AllowedCidrs" /></div>
+    <div><label asp-for="Input.CertificateThumbprint"></label><input asp-for="Input.CertificateThumbprint" /></div>
+
+    <h2>Limits</h2>
+    <div><label asp-for="Input.TpsLimit"></label><input asp-for="Input.TpsLimit" type="number" /></div>
+    <div><label asp-for="Input.DailyAmountLimit"></label><input asp-for="Input.DailyAmountLimit" type="number" step="0.01" /></div>
+    <div><label asp-for="Input.MaxMessageBytes"></label><input asp-for="Input.MaxMessageBytes" type="number" /></div>
+    <div><label asp-for="Input.IdleTimeoutSeconds"></label><input asp-for="Input.IdleTimeoutSeconds" type="number" /></div>
+
+    <h2>Permissions</h2>
+    <div><label asp-for="Input.PermittedMtis">Permitted MTIs (semicolon or comma separated, e.g. 0200; 0420)</label><input asp-for="Input.PermittedMtis" /></div>
+    <div><label asp-for="Input.PermittedChannels">Permitted channels (semicolon or comma separated, e.g. 01; 02)</label><input asp-for="Input.PermittedChannels" /></div>
+    <div><label asp-for="Input.AllowedBinRanges">Allowed BIN ranges (semicolon or comma separated)</label><input asp-for="Input.AllowedBinRanges" /></div>
+
+    <h2>Profiles</h2>
+    <div><label asp-for="Input.KeyProfile"></label><input asp-for="Input.KeyProfile" /></div>
+    <div><label asp-for="Input.SettlementProfile"></label><input asp-for="Input.SettlementProfile" /></div>
+    <div>
+        <label asp-for="Input.InstitutionCode">Institution</label>
+        <select asp-for="Input.InstitutionCode">
+            <option value="">(none)</option>
+            @foreach (var institution in Model.Institutions)
+            {
+                <option value="@institution.Code">@institution.Code - @institution.Name</option>
+            }
+        </select>
+    </div>
+
+    <button type="submit">Save</button>
+    <a asp-page="/Configuration/SinkNodes/Index">Cancel</a>
+</form>

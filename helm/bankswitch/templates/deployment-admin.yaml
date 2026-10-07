@@ -1,0 +1,162 @@
+{{- if .Values.admin.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "bankswitch.fullname" . }}-admin
+  namespace: {{ .Values.namespace.name }}
+  labels:
+    {{- include "bankswitch.labels" . | nindent 4 }}
+    app.kubernetes.io/component: admin
+spec:
+  replicas: {{ .Values.admin.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "bankswitch.admin.selectorLabels" . | nindent 6 }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        {{- include "bankswitch.labels" . | nindent 8 }}
+        {{- include "bankswitch.admin.selectorLabels" . | nindent 8 }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port:   "8081"
+        prometheus.io/path:   "/metrics"
+    spec:
+      serviceAccountName: {{ include "bankswitch.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      terminationGracePeriodSeconds: {{ .Values.admin.terminationGracePeriodSeconds }}
+      containers:
+        - name: admin
+          image: "{{ .Values.admin.image.registry }}:{{ .Values.admin.image.tag }}"
+          imagePullPolicy: {{ .Values.admin.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.containerSecurityContext | nindent 12 }}
+          ports:
+            - name: http
+              containerPort: 8081
+              protocol: TCP
+          env:
+            {{- range $k, $v := .Values.admin.env }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+            {{- range .Values.admin.secretEnv }}
+            - name: {{ .name }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .secretKeyRef.name }}
+                  key: {{ .secretKeyRef.key }}
+            {{- end }}
+          livenessProbe:
+            {{- toYaml .Values.admin.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.admin.readinessProbe | nindent 12 }}
+          resources:
+            {{- toYaml .Values.admin.resources | nindent 12 }}
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
+{{- end }}
+
+---
+{{- if and .Values.admin.enabled .Values.admin.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "bankswitch.fullname" . }}-admin
+  namespace: {{ .Values.namespace.name }}
+  labels:
+    {{- include "bankswitch.labels" . | nindent 4 }}
+  {{- with .Values.admin.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  ingressClassName: {{ .Values.admin.ingress.className }}
+  {{- if .Values.admin.ingress.tls }}
+  tls:
+    {{- toYaml .Values.admin.ingress.tls | nindent 4 }}
+  {{- end }}
+  rules:
+    {{- range .Values.admin.ingress.hosts }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ .path }}
+            pathType: {{ .pathType }}
+            backend:
+              service:
+                name: {{ include "bankswitch.fullname" $ }}-admin
+                port:
+                  number: {{ $.Values.admin.service.port }}
+          {{- end }}
+    {{- end }}
+{{- end }}
+
+---
+{{- if and .Values.engine.enabled .Values.engine.autoscaling.enabled -}}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "bankswitch.fullname" . }}-engine
+  namespace: {{ .Values.namespace.name }}
+  labels:
+    {{- include "bankswitch.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "bankswitch.fullname" . }}-engine
+  minReplicas: {{ .Values.engine.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.engine.autoscaling.maxReplicas }}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.engine.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.engine.autoscaling.targetMemoryUtilizationPercentage }}
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 60      # react quickly to traffic spikes
+      policies:
+        - type: Pods
+          value: 2
+          periodSeconds: 60               # add max 2 pods per minute
+    scaleDown:
+      stabilizationWindowSeconds: 300     # wait 5 min before scaling down
+      policies:
+        - type: Pods
+          value: 1
+          periodSeconds: 120              # remove max 1 pod per 2 minutes
+{{- end }}
+
+---
+{{- if and .Values.engine.enabled .Values.engine.podDisruptionBudget.enabled -}}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "bankswitch.fullname" . }}-engine
+  namespace: {{ .Values.namespace.name }}
+spec:
+  minAvailable: {{ .Values.engine.podDisruptionBudget.minAvailable }}
+  selector:
+    matchLabels:
+      {{- include "bankswitch.engine.selectorLabels" . | nindent 6 }}
+{{- end }}

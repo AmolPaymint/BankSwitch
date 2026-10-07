@@ -1,0 +1,28 @@
+@page
+@model BankSwitch.Admin.Pages.Configuration.CardFees.IndexModel
+<h1>Card-lifecycle fees &amp; waivers</h1>
+<p>
+    Issuance, replacement, upgrade, RePIN, annual maintenance, and add-on card fees - and their
+    waivers - configurable BIN-wise, account-scheme-wise, or for an individual card. Card-scoped
+    and account-scheme-scoped rules take precedence over BIN-scoped rules; among BIN rules, the
+    longest matching prefix wins.
+</p>
+<p><a asp-page="/Configuration/CardFees/Edit">Add new rule</a></p>
+<table>
+    <thead><tr><th>Fee type</th><th>Scope</th><th>Scope value</th><th>Waiver?</th><th>Fee</th><th>Active</th><th>Description</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var rule in Model.Rules)
+    {
+        <tr>
+            <td>@rule.FeeType</td>
+            <td>@rule.ScopeType</td>
+            <td>@rule.ScopeValue</td>
+            <td>@(rule.IsWaiver ? "Yes" : "No")</td>
+            <td>@(rule.FeeId.HasValue && Model.FeeNames.TryGetValue(rule.FeeId.Value, out var name) ? name : "-")</td>
+            <td>@(rule.IsActive ? "Yes" : "No")</td>
+            <td>@rule.Description</td>
+            <td><a asp-page="/Configuration/CardFees/Edit" asp-route-id="@rule.Id">Edit</a></td>
+        </tr>
+    }
+    </tbody>
+</table>

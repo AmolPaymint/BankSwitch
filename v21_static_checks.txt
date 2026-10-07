@@ -1,0 +1,7 @@
+legacy_target_framework_version=0
+hintpath=0
+packages_config=0
+field_indexer=0
+throw_ex=0
+cs_files=77
+csproj_files=10

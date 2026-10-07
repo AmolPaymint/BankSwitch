@@ -1,0 +1,78 @@
+@page
+@model BankSwitch.Admin.Pages.Reports.TransactionsModel
+<h1>Transaction report (in / out)</h1>
+<p>Every transaction processed by the switch: the source node it came in from and the sink node it was routed out to, with response code, amount, latency, and reversal state. PAN is shown masked only.</p>
+
+<form method="get">
+    <div><label asp-for="From"></label><input asp-for="From" type="datetime-local" /></div>
+    <div><label asp-for="To"></label><input asp-for="To" type="datetime-local" /></div>
+    <div>
+        <label asp-for="SourceNodeId">Source node (in)</label>
+        <select asp-for="SourceNodeId">
+            <option value="">(all)</option>
+            @foreach (var node in Model.SourceNodes)
+            {
+                <option value="@node.NodeId">@node.NodeId - @node.Name</option>
+            }
+        </select>
+    </div>
+    <div>
+        <label asp-for="SinkNodeId">Sink node (out)</label>
+        <select asp-for="SinkNodeId">
+            <option value="">(all)</option>
+            @foreach (var node in Model.SinkNodes)
+            {
+                <option value="@node.NodeId">@node.NodeId - @node.Name</option>
+            }
+        </select>
+    </div>
+    <div><label asp-for="Mti">MTI</label><input asp-for="Mti" placeholder="e.g. 0200" /></div>
+    <div><label asp-for="ResponseCode">Response code</label><input asp-for="ResponseCode" placeholder="e.g. 00" /></div>
+    <input type="hidden" asp-for="Page" value="1" />
+    <button type="submit">Filter</button>
+</form>
+
+<h2>Summary</h2>
+<p>
+    @Model.Report.TotalCount transactions matched &mdash;
+    @Model.Report.ApprovedCount approved, @Model.Report.DeclinedCount declined,
+    total amount @Model.Report.TotalAmount.ToString("0.00"),
+    average latency @Model.Report.AverageLatencyMilliseconds.ToString("0") ms.
+</p>
+
+<table>
+    <thead><tr><th>Time</th><th>MTI</th><th>Source (in)</th><th>Sink (out)</th><th>Masked PAN</th><th>STAN</th><th>RRN</th><th>Amount</th><th>Ccy</th><th>Response</th><th>Latency (ms)</th><th>Route</th><th>Scheme</th><th>Reversal</th></tr></thead>
+    <tbody>
+    @foreach (var txn in Model.Report.Items)
+    {
+        <tr>
+            <td>@txn.CreatedAt</td>
+            <td>@txn.Mti</td>
+            <td>@txn.SourceNodeId</td>
+            <td>@txn.SinkNodeId</td>
+            <td>@txn.MaskedPan</td>
+            <td>@txn.Stan</td>
+            <td>@txn.Rrn</td>
+            <td>@txn.Amount</td>
+            <td>@txn.CurrencyCode</td>
+            <td>@txn.ResponseCode</td>
+            <td>@txn.LatencyMilliseconds</td>
+            <td>@txn.RouteUsed</td>
+            <td>@txn.SchemeUsed</td>
+            <td>@txn.ReversalState</td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<p>
+    Page @Model.Page of @Model.TotalPages.
+    @if (Model.Page > 1)
+    {
+        <a asp-page="/Reports/Transactions" asp-route-Page="@(Model.Page - 1)" asp-route-From="@Model.From" asp-route-To="@Model.To" asp-route-SourceNodeId="@Model.SourceNodeId" asp-route-SinkNodeId="@Model.SinkNodeId" asp-route-Mti="@Model.Mti" asp-route-ResponseCode="@Model.ResponseCode">Previous</a>
+    }
+    @if (Model.Page < Model.TotalPages)
+    {
+        <a asp-page="/Reports/Transactions" asp-route-Page="@(Model.Page + 1)" asp-route-From="@Model.From" asp-route-To="@Model.To" asp-route-SourceNodeId="@Model.SourceNodeId" asp-route-SinkNodeId="@Model.SinkNodeId" asp-route-Mti="@Model.Mti" asp-route-ResponseCode="@Model.ResponseCode">Next</a>
+    }
+</p>

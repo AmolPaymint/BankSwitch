@@ -1,0 +1,21 @@
+{
+  "version": "v44.7",
+  "title": "End-to-End Transaction Processing & Failure-Recovery Certification",
+  "scenarios": [
+    {"id":"FR-001","category":"NORMAL","description":"Approved 0200 completes Received→Validated→MacVerified→Routed→ForwardedToSink→Responded and resolves durable recovery snapshot."},
+    {"id":"FR-002","category":"DECLINE","description":"Issuer decline is returned once and durable recovery snapshot is resolved; no compensating reversal is generated."},
+    {"id":"FR-003","category":"TIMEOUT","description":"Upstream timeout leaves durable snapshot TimedOut and returns response 91 to source."},
+    {"id":"FR-004","category":"UNKNOWN_OUTCOME","description":"Process crash after durable snapshot/ForwardedToSink but before response is recovered after restart by 0420 to the exact original sink."},
+    {"id":"FR-005","category":"REVERSAL","description":"Accepted recovery reversal transitions lifecycle to Reversed and closes snapshot."},
+    {"id":"FR-006","category":"REVERSAL_RETRY","description":"Rejected/empty/error recovery reversal is retry-scheduled using configured backoff and never falsely marked Reversed."},
+    {"id":"FR-007","category":"REVERSAL_EXHAUSTION","description":"Recovery exceeding MaxAttempts transitions to Failed and raises audit evidence."},
+    {"id":"FR-008","category":"DUPLICATE","description":"Distributed duplicate claim prevents a second financial execution for the same source/STAN/business date."},
+    {"id":"FR-009","category":"FAILOVER","description":"Open/unavailable primary sink routes to configured fallback sink before STIP is considered."},
+    {"id":"FR-010","category":"STIP","description":"When all upstream sinks are unavailable, stand-in applies BIN profile, floor and velocity limits and records persistent velocity in SQL mode."},
+    {"id":"FR-011","category":"PREAUTH","description":"0100 approved hold survives restart; 0220 completion and 0420 void correlate by RRN/STAN and source."},
+    {"id":"FR-012","category":"CRASH_RESTART","description":"Transaction lifecycle, preauth, stand-in velocity and recovery snapshots are SQL-backed in production and survive engine restart."},
+    {"id":"FR-013","category":"SECURITY","description":"Recovery payload is encrypted at rest and contains no clear PAN in TransactionRecoverySnapshots."},
+    {"id":"FR-014","category":"OBSERVABILITY","description":"Operations API exposes due recovery work without revealing protected reversal payload or PAN."},
+    {"id":"FR-015","category":"DATABASE","description":"Migration 042 applies on clean and upgraded SQL Server with FK/index/check constraints intact."}
+  ]
+}

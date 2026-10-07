@@ -1,0 +1,7 @@
+Golden LOD SHA256: 180a8aa19cc6c3929c6be69ef5c24df9787d19c3a3b58e0e908e4acf3d90822e
+Records/screens/states/config/emv: 36 393 267 3 4
+PASS: golden ANDC306EMVXT25G structural expectations
+Migration chain: 1 - 43 count 43
+PASS: migrations contiguous 001-043
+PASS: canonical v44.8 schema
+PASS: v44.8 NCR NDC LOD parser/configuration/deployment static gate

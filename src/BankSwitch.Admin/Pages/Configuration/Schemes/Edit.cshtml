@@ -1,0 +1,56 @@
+@page "{id:guid?}"
+@model BankSwitch.Admin.Pages.Configuration.Schemes.EditModel
+<h1>@(Model.Id.HasValue ? "Edit scheme" : "Add scheme")</h1>
+@if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+{
+    <p class="danger">@Model.ErrorMessage</p>
+}
+<form method="post">
+    <div><label asp-for="Input.Name"></label><input asp-for="Input.Name" /></div>
+    <div>
+        <label asp-for="Input.SourceNodeId">Source node</label>
+        <select asp-for="Input.SourceNodeId">
+            @foreach (var node in Model.SourceNodes)
+            {
+                <option value="@node.Id">@node.NodeId - @node.Name</option>
+            }
+        </select>
+    </div>
+    <div>
+        <label asp-for="Input.RouteId">Route</label>
+        <select asp-for="Input.RouteId">
+            @foreach (var route in Model.Routes)
+            {
+                <option value="@route.Id">@route.BinPrefix</option>
+            }
+        </select>
+    </div>
+    <div><label asp-for="Input.IsActive"></label><input asp-for="Input.IsActive" type="checkbox" style="width:auto" /></div>
+
+    <h2>Permissions</h2>
+    <p>Each row authorizes a transaction-type/channel combination on this scheme and the fee applied to it. Leave a row blank to skip it.</p>
+    <table>
+        <thead><tr><th>Transaction type code</th><th>Channel code</th><th>Fee</th></tr></thead>
+        <tbody>
+        @for (var i = 0; i < Model.Input.Permissions.Count; i++)
+        {
+            <tr>
+                <td><input asp-for="Input.Permissions[i].TransactionTypeCode" maxlength="2" /></td>
+                <td><input asp-for="Input.Permissions[i].ChannelCode" maxlength="2" /></td>
+                <td>
+                    <select asp-for="Input.Permissions[i].FeeId">
+                        <option value="@Guid.Empty">(none)</option>
+                        @foreach (var fee in Model.Fees)
+                        {
+                            <option value="@fee.Id">@fee.Name</option>
+                        }
+                    </select>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+
+    <button type="submit">Save</button>
+    <a asp-page="/Configuration/Schemes/Index">Cancel</a>
+</form>

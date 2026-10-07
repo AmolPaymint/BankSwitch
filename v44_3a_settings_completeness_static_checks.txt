@@ -1,0 +1,9 @@
+BankSwitch v44.3A static validation evidence
+UTC 2026-09-23T06:37:52Z
+PASS: migration 039 present
+PASS: 39 contiguous migrations
+PASS: 125 field-level settings definitions across 34 domains
+PASS: typed frontend settings controls
+PASS: completeness API
+PASS: runtime applicator wiring
+PASS: v44.3 production static gate

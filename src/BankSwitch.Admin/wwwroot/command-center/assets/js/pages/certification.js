@@ -1,0 +1,2 @@
+import { liveModule } from "../core/live-module.js";
+export async function render(root){return liveModule(root,{"eyebrow": "Certification Lab", "title": "Issuer + Acquirer Certification", "description": "Persistent certification test packs, lab dashboard and issuer packs", "sources": [{"label": "Acquirer Packs", "path": "/certification/acquiring/packs"}, {"label": "Lab Dashboard", "path": "/certification/acquiring/lab/dashboard"}, {"label": "Issuer Dashboard", "path": "/certification/issuer/dashboard"}, {"label": "Issuer Packs", "path": "/certification/issuer/packs"}]});}

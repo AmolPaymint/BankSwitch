@@ -1,0 +1,2 @@
+import { liveModule } from '../core/live-module.js';
+export async function render(root){return liveModule(root,{eyebrow:'Reports',title:'Operational & Regulatory Reports',description:'Live operational uptime and certification evidence report inventories.',sources:[{label:'Uptime Reports',path:'/operations-command-center/regulatory-uptime-reports'},{label:'Acquirer Certification Reports',path:'/certification/acquiring/reports'},{label:'Issuer Certification Reports',path:'/certification/issuer/reports'}]});}

@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\BankSwitch.Core\BankSwitch.Core.csproj" />
+    <PackageReference Include="FluentNHibernate" />
+    <PackageReference Include="NHibernate" />
+    <PackageReference Include="Iesi.Collections" />
+  </ItemGroup>
+</Project>

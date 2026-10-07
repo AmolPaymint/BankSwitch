@@ -1,0 +1,59 @@
+# ─────────────────────────────────────────────
+# Stage 1 — Build
+# ─────────────────────────────────────────────
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+# Restore packages first (layer cache: only re-runs when *.csproj changes)
+COPY ["src/BankSwitch.Domain/BankSwitch.Domain.csproj",            "src/BankSwitch.Domain/"]
+COPY ["src/BankSwitch.Application/BankSwitch.Application.csproj",  "src/BankSwitch.Application/"]
+COPY ["src/BankSwitch.Infrastructure/BankSwitch.Infrastructure.csproj", "src/BankSwitch.Infrastructure/"]
+COPY ["src/BankSwitch.Engine/BankSwitch.Engine.csproj",            "src/BankSwitch.Engine/"]
+
+# Legacy tombstoned projects (included for solution compile compatibility)
+COPY ["src/BankSwitch.Core/BankSwitch.Core.csproj",    "src/BankSwitch.Core/"]
+COPY ["src/BankSwitch.DAO/BankSwitch.DAO.csproj",      "src/BankSwitch.DAO/"]
+COPY ["src/BankSwitch.Logic/BankSwitch.Logic.csproj",  "src/BankSwitch.Logic/"]
+COPY ["src/BankSwitch.Mapping/BankSwitch.Mapping.csproj", "src/BankSwitch.Mapping/"]
+
+RUN dotnet restore "src/BankSwitch.Engine/BankSwitch.Engine.csproj"
+
+# Copy full source and build
+COPY . .
+RUN dotnet publish "src/BankSwitch.Engine/BankSwitch.Engine.csproj" \
+    -c Release \
+    -o /app/publish \
+    --no-restore \
+    /p:UseAppHost=false
+
+# ─────────────────────────────────────────────
+# Stage 2 — Runtime
+# ─────────────────────────────────────────────
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+WORKDIR /app
+
+# Security hardening: run as non-root
+RUN groupadd --gid 1001 bankswitch \
+ && useradd  --uid 1001 --gid bankswitch --shell /bin/sh --no-create-home bankswitch
+
+# PCI DSS: no shell access to sensitive directories
+RUN mkdir -p /app/logs /app/clearing-files /app/keys \
+ && chown -R bankswitch:bankswitch /app
+
+COPY --from=build --chown=bankswitch:bankswitch /app/publish .
+
+# Engine listens on port 8080 (ISO 8583 TCP gateway) and 5000 (internal HTTP)
+EXPOSE 8080 5000
+
+USER bankswitch
+
+# Health check used by Docker and Kubernetes before Helm readiness probe takes over
+HEALTHCHECK --interval=10s --timeout=5s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:5000/health/live || exit 1
+
+ENV ASPNETCORE_ENVIRONMENT=Production \
+    DOTNET_RUNNING_IN_CONTAINER=true \
+    DOTNET_GCConserveMemory=1 \
+    Hsm__Mode=HmacSoftwareForTestOnly
+
+ENTRYPOINT ["dotnet", "BankSwitch.Engine.dll"]

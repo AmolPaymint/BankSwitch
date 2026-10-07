@@ -1,0 +1,9 @@
+{
+  "migration_count": 41,
+  "last_migration": 41,
+  "table_count_static_plus_known_dynamic": 220,
+  "repository_table_references": 92,
+  "repository_table_references_resolved": 92,
+  "legacy_pos_duplicate_tables_created": 0,
+  "sql_server_dialect_violations": 0
+}

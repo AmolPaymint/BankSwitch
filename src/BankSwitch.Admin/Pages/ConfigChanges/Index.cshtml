@@ -1,0 +1,34 @@
+@page
+@model BankSwitch.Admin.Pages.ConfigChanges.IndexModel
+<h1>Maker-checker configuration changes</h1>
+<form method="post" asp-page-handler="Create">
+    <div><label asp-for="Input.Area"></label><select asp-for="Input.Area"><option>Route</option><option>BIN</option><option>Fee</option><option>Scheme</option><option>SourceNode</option><option>SinkNode</option><option>KeyProfile</option><option>TransactionLimit</option><option>UserRole</option></select></div>
+    <div><label asp-for="Input.OldValue"></label><textarea asp-for="Input.OldValue"></textarea></div>
+    <div><label asp-for="Input.NewValue"></label><textarea asp-for="Input.NewValue"></textarea></div>
+    <div><label asp-for="Input.Reason"></label><input asp-for="Input.Reason" /></div>
+    <div><label asp-for="Input.TicketReference"></label><input asp-for="Input.TicketReference" /></div>
+    <div><label asp-for="Input.EffectiveAt"></label><input asp-for="Input.EffectiveAt" type="datetime-local" /></div>
+    <button type="submit">Create draft</button>
+</form>
+<table>
+    <thead><tr><th>Area</th><th>State</th><th>Maker</th><th>Checker</th><th>Ticket</th><th>Effective</th><th>Actions</th></tr></thead>
+    <tbody>
+    @foreach (var item in Model.Items)
+    {
+        <tr>
+            <td>@item.Area</td>
+            <td>@item.State</td>
+            <td>@item.Maker</td>
+            <td>@item.Checker</td>
+            <td>@item.TicketReference</td>
+            <td>@item.EffectiveAt</td>
+            <td>
+                <form method="post" asp-page-handler="Submit"><input type="hidden" name="id" value="@item.Id" /><button>Submit</button></form>
+                <form method="post" asp-page-handler="Approve"><input type="hidden" name="id" value="@item.Id" /><button>Approve</button></form>
+                <form method="post" asp-page-handler="Activate"><input type="hidden" name="id" value="@item.Id" /><button>Activate</button></form>
+                <form method="post" asp-page-handler="Archive"><input type="hidden" name="id" value="@item.Id" /><button>Archive</button></form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

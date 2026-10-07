@@ -1,0 +1,9 @@
+import { api } from '../core/api.js';
+import { CONFIG } from '../core/config.js';
+import { pageHero,kpi } from '../components/layout.js';
+import { mountTable,tag } from '../core/utils.js';
+export async function render(root){
+ const env=CONFIG.environment||'UAT'; const [certs,secrets]=await Promise.all([api.settings(`/certificates?environment=${encodeURIComponent(env)}`),api.settings(`/secrets?environment=${encodeURIComponent(env)}`)]); const c=Array.isArray(certs)?certs:[],s=Array.isArray(secrets)?secrets:[];
+ const exp=c.filter(x=>x.validTo&&((new Date(x.validTo)-Date.now())/86400000)<=30).length;
+ root.innerHTML=pageHero('Enterprise Administration','Certificates & Secret References','Security inventory shows metadata and references only. Private keys, HSM keys, passwords and secret values are never returned to the browser.')+`<div class="grid cols-4">${kpi('Certificates',c.length,'inventory')}${kpi('Expiring ≤30d',exp,'rotation required',exp?'var(--red)':'var(--green)')}${kpi('Secret References',s.length,'value never exposed')}${kpi('Environment',env,'security scope')}</div><div class="divider"></div><div class="grid cols-2"><div class="card pad"><h2 class="section-title">Certificate Inventory</h2>${mountTable(['Name','Purpose','Issuer','Valid To','Status'],c.map(x=>[x.name,x.purpose,x.issuer,new Date(x.validTo).toLocaleDateString(),tag(x.status||'Configured',x.validTo&&new Date(x.validTo)<Date.now()+30*86400000?'yellow':'green')]))}</div><div class="card pad"><h2 class="section-title">Secret References</h2>${mountTable(['Name','Provider','Reference','Version','Rotation / Expiry'],s.map(x=>[x.name,x.provider,x.reference||x.referencePath||'Configured',x.version||'—',`${x.lastRotatedAt?new Date(x.lastRotatedAt).toLocaleDateString():'—'} / ${x.expiresAt?new Date(x.expiresAt).toLocaleDateString():'—'}`]))}</div></div>`;
+}

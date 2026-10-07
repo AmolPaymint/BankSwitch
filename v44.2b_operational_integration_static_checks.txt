@@ -1,0 +1,17 @@
+V44.2B STATIC CHECKS
+PASS live-module.js added
+PASS routing page live integration
+PASS cards page live integration
+PASS ATM page live integration
+PASS POS/acquiring page live integration
+PASS settlement page live integration
+PASS reconciliation page live integration
+PASS disputes page live integration
+PASS HSM page live integration
+PASS fraud/risk/AML page live integration
+PASS certification page live integration
+PASS enterprise integrations page live integration
+PASS compliance page live integration
+PASS reports page live integration
+PASS command-center routing facade added
+PASS production screens do not silently fall back to mock rows

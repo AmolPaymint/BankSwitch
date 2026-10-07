@@ -1,0 +1,2 @@
+import { liveModule } from "../core/live-module.js";
+export async function render(root){return liveModule(root,{"eyebrow": "HSM / Key Management", "title": "HSM Production Core", "description": "Live HSM connector, key, ceremony and audit state", "sources": [{"label": "Dashboard", "path": "/hsm/key-management/dashboard"}, {"label": "Connectors", "path": "/hsm/key-management/connectors"}, {"label": "Keys", "path": "/hsm/key-management/keys"}, {"label": "Ceremonies", "path": "/hsm/key-management/ceremonies"}]});}

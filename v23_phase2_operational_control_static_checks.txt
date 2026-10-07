@@ -1,0 +1,51 @@
+Bank-Payment-Switch v23 Phase 2 Operational Control static checks
+
+Checks performed in this environment are static only because dotnet SDK is not installed.
+
+Added modules/files:
+- src/BankSwitch.Domain/CmsOperationalEntities.cs
+- src/BankSwitch.Application/OperationalControlAbstractions.cs
+- src/BankSwitch.Application/OperationalControlService.cs
+- src/BankSwitch.Infrastructure/InMemoryOperationalControlRepository.cs
+- src/BankSwitch.Infrastructure/SqlOperationalControlRepository.cs
+- src/BankSwitch.Infrastructure/NotificationDispatcher.cs
+- src/BankSwitch.Admin/Endpoints/OperationalControlEndpoints.cs
+- db/003_operational_control_phase2.sql
+- docs/V23_PHASE2_OPERATIONAL_CONTROL.md
+- tests/BankSwitch.Tests/CorePrepaidCmsPhase2OperationalControlTests.cs
+
+Module coverage:
+- Agency management: implemented
+- Agency credit management: implemented
+- Corporate management: implemented
+- Corporate department/cost center management: implemented
+- Corporate employee management: implemented
+- Corporate budgets: implemented
+- Card inventory/card-stock batches: implemented
+- Bulk card issuance: implemented
+- Advanced limits: implemented and integrated into authorization
+- Risk rules: implemented and integrated into authorization
+- Notifications: implemented with queue and in-process dispatcher
+- Statements: implemented from ledger entries
+- Maker-checker: existing workflow preserved and phase-2 areas added to allowed config-change areas
+
+Static findings:
+TargetFramework in Directory.Build.props: <Project>
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <LangVersion>latest</LangVersion>
+    <Deterministic>true</Deterministic>
+    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+</Project>
+active_csproj_net4_or_net48_occurrences= 0
+hintpath_occurrences= 0
+packages_config_occurrences= 0
+phase2_source_file_count= 9
+not_implemented_or_throw_ex_occurrences= 0
+operational_endpoints_mapped= True
+sql_phase2_schema_present= True

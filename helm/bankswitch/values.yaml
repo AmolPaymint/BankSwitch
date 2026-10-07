@@ -1,0 +1,257 @@
+# ============================================================
+# BankSwitch v25 — Helm Chart Default Values
+# ============================================================
+# Override in values.production.yaml or via --set flags.
+
+# ── Global ───────────────────────────────────────────────────
+global:
+  registry: ghcr.io/bankswitch
+  imagePullPolicy: IfNotPresent
+  imagePullSecrets: []
+
+# ── Engine (ISO 8583 TCP Gateway) ────────────────────────────
+engine:
+  enabled: true
+  replicaCount: 2   # active-active; never 1 in production
+
+  image:
+    registry: ghcr.io/bankswitch/bankswitch-engine
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  # Resource limits matched to 1000 TPS per pod target
+  resources:
+    requests:
+      cpu: 500m
+      memory: 512Mi
+    limits:
+      cpu: 2000m
+      memory: 1Gi
+
+  # Horizontal Pod Autoscaler
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
+
+  # Pod Disruption Budget — always keep ≥ 1 pod alive during rolling updates
+  podDisruptionBudget:
+    enabled: true
+    minAvailable: 1
+
+  service:
+    type: LoadBalancer
+    isoPort: 8080          # ISO 8583 TCP (external)
+    httpPort: 5000         # Health / metrics (internal)
+    isoPortAnnotations:
+      service.beta.kubernetes.io/aws-load-balancer-type: nlb
+      service.beta.kubernetes.io/aws-load-balancer-internal: "true"
+
+  # Liveness: process is alive (not deadlocked)
+  livenessProbe:
+    httpGet:
+      path: /health/live
+      port: 5000
+    initialDelaySeconds: 15
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+
+  # Readiness: ready to receive ISO 8583 traffic (DB + Redis healthy)
+  readinessProbe:
+    httpGet:
+      path: /health/ready
+      port: 5000
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
+
+  # Graceful shutdown — finish in-flight transactions before pod stops
+  terminationGracePeriodSeconds: 30
+
+  # Anti-affinity: spread pods across AZs for HA
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/component: engine
+            topologyKey: topology.kubernetes.io/zone
+
+  env:
+    ASPNETCORE_ENVIRONMENT: Production
+    DOTNET_RUNNING_IN_CONTAINER: "true"
+    DOTNET_GCConserveMemory: "1"
+
+  # Secrets injected from Kubernetes Secret object (see secret.yaml)
+  secretEnv:
+    - name: SWITCHDB_CONNECTION_STRING
+      secretKeyRef:
+        name: bankswitch-secrets
+        key: switchdb-connection-string
+    - name: Redis__ConnectionString
+      secretKeyRef:
+        name: bankswitch-secrets
+        key: redis-connection-string
+
+  # ISO 8583 TCP connection tuning
+  configuration:
+    StandIn__Enabled: "false"
+    Hsm__Mode: "Http"
+    Database__MaxPoolSize: "200"
+    Database__CommandTimeoutSeconds: "30"
+
+  nodeSelector: {}
+  tolerations: []
+
+# ── Admin (Razor Pages + REST API) ───────────────────────────
+admin:
+  enabled: true
+  replicaCount: 2
+
+  image:
+    registry: ghcr.io/bankswitch/bankswitch-admin
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: 1000m
+      memory: 512Mi
+
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 75
+
+  podDisruptionBudget:
+    enabled: true
+    minAvailable: 1
+
+  service:
+    type: ClusterIP
+    port: 8081
+
+  ingress:
+    enabled: true
+    className: nginx
+    annotations:
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    hosts:
+      - host: bankswitch-admin.example.com
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: bankswitch-admin-tls
+        hosts:
+          - bankswitch-admin.example.com
+
+  livenessProbe:
+    httpGet:
+      path: /health/live
+      port: 8081
+    initialDelaySeconds: 15
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+
+  readinessProbe:
+    httpGet:
+      path: /health/ready
+      port: 8081
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
+
+  terminationGracePeriodSeconds: 15
+
+  env:
+    ASPNETCORE_ENVIRONMENT: Production
+    ASPNETCORE_URLS: http://+:8081
+    DOTNET_RUNNING_IN_CONTAINER: "true"
+
+  secretEnv:
+    - name: SWITCHDB_CONNECTION_STRING
+      secretKeyRef:
+        name: bankswitch-secrets
+        key: switchdb-connection-string
+    - name: Redis__ConnectionString
+      secretKeyRef:
+        name: bankswitch-secrets
+        key: redis-connection-string
+    - name: Admin__BootstrapPassword
+      secretKeyRef:
+        name: bankswitch-secrets
+        key: admin-bootstrap-password
+
+  nodeSelector: {}
+  tolerations: []
+
+# ── Kubernetes Namespace ──────────────────────────────────────
+namespace:
+  create: true
+  name: bankswitch
+  labels:
+    environment: production
+    pci-scope: "true"
+    team: platform
+
+# ── Service Account ───────────────────────────────────────────
+serviceAccount:
+  create: true
+  name: bankswitch-sa
+  annotations:
+    # Azure Workload Identity — annotate with managed identity client ID
+    azure.workload.identity/client-id: ""
+
+# ── Monitoring & Observability ────────────────────────────────
+monitoring:
+  # Prometheus ServiceMonitor (requires prometheus-operator CRD)
+  serviceMonitor:
+    enabled: true
+    namespace: monitoring
+    interval: 15s
+    scrapeTimeout: 10s
+    path: /metrics
+
+  # Grafana dashboard ConfigMap
+  grafanaDashboard:
+    enabled: true
+    namespace: monitoring
+    label: grafana_dashboard
+
+# ── Network Policies ──────────────────────────────────────────
+networkPolicy:
+  enabled: true
+  # Only allow ingress to engine from known terminal IPs (PCI DSS Req 1.3)
+  engineIngressCidrs:
+    - 10.0.0.0/8       # Internal network
+    - 172.16.0.0/12    # RFC 1918
+
+# ── Pod Security ─────────────────────────────────────────────
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1001
+  runAsGroup: 1001
+  fsGroup: 1001
+  seccompProfile:
+    type: RuntimeDefault
+
+containerSecurityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop: [ALL]

@@ -1,0 +1,7 @@
+V42 static checks
+- Added src/BankSwitch.Application/RiskFraudAmlProductionCore.cs
+- Added src/BankSwitch.Admin/Endpoints/RiskFraudAmlEndpoints.cs
+- Registered IRiskFraudAmlRepository and IRiskFraudAmlProductionService in Admin Program.cs
+- Mapped /api/risk-fraud-aml endpoints
+- Added db/035_realtime_fraud_risk_aml_production_core.sql
+- Added V42_REALTIME_FRAUD_RISK_AML_PRODUCTION_CORE.md

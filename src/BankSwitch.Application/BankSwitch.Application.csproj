@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\BankSwitch.Domain\BankSwitch.Domain.csproj" />
+    <!-- <ProjectReference Include="..\BankSwitch.Infrastructure\BankSwitch.Infrastructure.csproj" /> -->
+  </ItemGroup>
+</Project>

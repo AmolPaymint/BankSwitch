@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\BankSwitch.Core\BankSwitch.Core.csproj" />
+    <ProjectReference Include="..\BankSwitch.DAO\BankSwitch.DAO.csproj" />
+  </ItemGroup>
+</Project>

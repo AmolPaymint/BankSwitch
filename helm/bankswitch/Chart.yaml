@@ -1,0 +1,29 @@
+apiVersion: v2
+name: bankswitch
+description: >
+  BankSwitch v25 — Enterprise ISO 8583 Payment Switch and Prepaid CMS.
+  Includes the TCP gateway Engine and Admin portal components.
+
+type: application
+version: 25.0.0
+appVersion: "25.0.0"
+
+keywords:
+  - payment-switch
+  - iso8583
+  - prepaid-cms
+  - fintech
+
+home: https://github.com/bankswitch/bankswitch-v25
+sources:
+  - https://github.com/bankswitch/bankswitch-v25
+
+maintainers:
+  - name: BankSwitch Platform Team
+    email: platform@bankswitch.internal
+
+annotations:
+  artifacthub.io/changes: |
+    - kind: added
+      description: "Full enterprise gap analysis implementation: B1-B6"
+  artifacthub.io/license: Proprietary

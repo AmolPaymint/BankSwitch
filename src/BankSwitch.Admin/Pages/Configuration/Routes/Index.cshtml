@@ -1,0 +1,95 @@
+@page
+@model BankSwitch.Admin.Pages.Configuration.Routes.IndexModel
+<h1>Routes (advanced routing)</h1>
+<p>Routes are matched by BIN/card range plus optional Tier-1 criteria: country, MCC, currency, device, interchange, institution, product, network and account range. Leave a criterion blank to treat it as a wildcard.</p>
+@if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+{
+    <p class="danger">@Model.ErrorMessage</p>
+}
+<table>
+    <thead>
+        <tr>
+            <th>BIN</th><th>Sink</th><th>Fallback</th><th>Priority</th><th>Criteria</th><th>Active</th><th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var route in Model.Routes)
+    {
+        <tr>
+            <form method="post" asp-page-handler="Update">
+                <input type="hidden" name="id" value="@route.Id" />
+                <td><input name="Input.BinPrefix" value="@route.BinPrefix" maxlength="12" /></td>
+                <td>
+                    <select name="Input.SinkNodeId">
+                        @foreach (var sink in Model.SinkNodes)
+                        {
+                            <option value="@sink.Id" selected="@(sink.Id == route.SinkNodeId)">@sink.NodeId</option>
+                        }
+                    </select>
+                </td>
+                <td>
+                    <select name="Input.FallbackSinkNodeId">
+                        <option value="">None</option>
+                        @foreach (var sink in Model.SinkNodes)
+                        {
+                            <option value="@sink.Id" selected="@(route.FallbackSinkNodeId == sink.Id)">@sink.NodeId</option>
+                        }
+                    </select>
+                </td>
+                <td><input name="Input.Priority" value="@route.Priority" type="number" /></td>
+                <td>
+                    <input name="Input.CardRangePrefixes" value="@string.Join(';', route.CardRangePrefixes)" placeholder="Card ranges" />
+                    <input name="Input.CountryCodes" value="@string.Join(';', route.CountryCodes)" placeholder="Country" />
+                    <input name="Input.MerchantCategoryCodes" value="@string.Join(';', route.MerchantCategoryCodes)" placeholder="MCC" />
+                    <input name="Input.CurrencyCodes" value="@string.Join(';', route.CurrencyCodes)" placeholder="Currency" />
+                    <input name="Input.DeviceCodes" value="@string.Join(';', route.DeviceCodes)" placeholder="Device" />
+                    <input name="Input.InterchangeCodes" value="@string.Join(';', route.InterchangeCodes)" placeholder="Interchange" />
+                    <input name="Input.InstitutionCodes" value="@string.Join(';', route.InstitutionCodes)" placeholder="Institution" />
+                    <input name="Input.ProductCodes" value="@string.Join(';', route.ProductCodes)" placeholder="Product" />
+                    <input name="Input.NetworkCodes" value="@string.Join(';', route.NetworkCodes)" placeholder="Network" />
+                    <input name="Input.AccountRanges" value="@string.Join(';', route.AccountRanges)" placeholder="Account ranges" />
+                </td>
+                <td><input type="checkbox" name="Input.IsActive" value="true" style="width:auto" checked="@route.IsActive" /></td>
+                <td><button type="submit">Save</button></td>
+            </form>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<h2>Add new route</h2>
+<form method="post" asp-page-handler="Create">
+    <div><label asp-for="Input.BinPrefix">BIN prefix</label><input asp-for="Input.BinPrefix" /></div>
+    <div>
+        <label asp-for="Input.SinkNodeId">Sink node</label>
+        <select asp-for="Input.SinkNodeId">
+            @foreach (var sink in Model.SinkNodes)
+            {
+                <option value="@sink.Id">@sink.NodeId</option>
+            }
+        </select>
+    </div>
+    <div>
+        <label asp-for="Input.FallbackSinkNodeId">Fallback sink</label>
+        <select asp-for="Input.FallbackSinkNodeId">
+            <option value="">None</option>
+            @foreach (var sink in Model.SinkNodes)
+            {
+                <option value="@sink.Id">@sink.NodeId</option>
+            }
+        </select>
+    </div>
+    <div><label asp-for="Input.Priority"></label><input asp-for="Input.Priority" type="number" /></div>
+    <div><label>Card ranges</label><input asp-for="Input.CardRangePrefixes" placeholder="539983;400000-400999" /></div>
+    <div><label>Country codes</label><input asp-for="Input.CountryCodes" placeholder="IN;356" /></div>
+    <div><label>MCC</label><input asp-for="Input.MerchantCategoryCodes" placeholder="6011;5411" /></div>
+    <div><label>Currency</label><input asp-for="Input.CurrencyCodes" placeholder="356;INR;840" /></div>
+    <div><label>Device</label><input asp-for="Input.DeviceCodes" placeholder="ATM001;POS;ECOM" /></div>
+    <div><label>Interchange</label><input asp-for="Input.InterchangeCodes" placeholder="NFS;VISA;MC;RUPAY" /></div>
+    <div><label>Institution</label><input asp-for="Input.InstitutionCodes" placeholder="IOB;RRB01" /></div>
+    <div><label>Product</label><input asp-for="Input.ProductCodes" placeholder="DEBIT;PREPAID;INSTA" /></div>
+    <div><label>Network</label><input asp-for="Input.NetworkCodes" placeholder="ONUS;OFFUS;NFS" /></div>
+    <div><label>Account ranges</label><input asp-for="Input.AccountRanges" placeholder="1234;900000-900999" /></div>
+    <div><label asp-for="Input.IsActive"></label><input asp-for="Input.IsActive" type="checkbox" style="width:auto" /></div>
+    <button type="submit">Add route</button>
+</form>

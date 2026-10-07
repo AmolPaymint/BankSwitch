@@ -1,0 +1,72 @@
+## Build outputs
+**/bin/
+**/obj/
+**/out/
+
+## Test projects and results
+tests/
+TestResults/
+*.trx
+coverage/
+
+## IDE and editor files
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.rsuser
+
+## Secrets and credentials — NEVER baked into images
+**/.env
+**/*.pem
+**/*.pfx
+**/*.p12
+**/*.key
+**/*.crt
+**/secrets.json
+**/appsettings.*.json
+!**/appsettings.json
+!**/appsettings.Production.json
+
+## Git and CI metadata
+.git/
+.github/
+**/.gitignore
+
+## Docker build files (not needed inside containers)
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+## Helm and Kubernetes (infrastructure, not app code)
+helm/
+k8s/
+terraform/
+
+## Monitoring configs
+monitoring/
+
+## Analysis and documentation
+bankswitch_analysis*/
+*.md
+ARCHITECTURE_MIGRATION.md
+
+## Legacy tombstoned projects (still included for compile, but exclude their outputs)
+src/BankSwitch.Core/bin/
+src/BankSwitch.Core/obj/
+src/BankSwitch.DAO/bin/
+src/BankSwitch.DAO/obj/
+src/BankSwitch.Logic/bin/
+src/BankSwitch.Logic/obj/
+src/BankSwitch.Mapping/bin/
+src/BankSwitch.Mapping/obj/
+
+## NuGet cache
+*.nupkg
+.nuget/
+
+## Log files
+*.log
+logs/
+clearing-files/

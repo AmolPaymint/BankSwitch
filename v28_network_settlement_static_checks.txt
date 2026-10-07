@@ -1,0 +1,29 @@
+V28 Network Settlement/Clearing/GL Static Checks
+
+Added files:
+- src/BankSwitch.Application/NetworkSettlementAbstractions.cs
+- src/BankSwitch.Application/InterchangeFeeRuleEngine.cs
+- src/BankSwitch.Application/SettlementCertificationService.cs
+- src/BankSwitch.Infrastructure/NetworkSettlementInfrastructure.cs
+- db/021_network_settlement_clearing_gl.sql
+- V28_NETWORK_SETTLEMENT_CLEARING_GL.md
+
+Updated files:
+- src/BankSwitch.Application/ClearingEngineService.cs
+- src/BankSwitch.Application/EftAbstractions.cs
+- src/BankSwitch.Domain/EftEntities.cs
+- src/BankSwitch.Engine/Program.cs
+- src/BankSwitch.Admin/Program.cs
+
+Coverage:
+- Visa fixed-width settlement file generation: ADDED
+- Mastercard IPM/File Express integration boundary: ADDED
+- RuPay/NPCI settlement format: ADDED
+- NPCI NFS settlement format: ADDED
+- Interchange fee rule engine: ADDED
+- RBI/NPCI certification evidence workflow: ADDED
+- Settlement file SHA-256 audit evidence: ADDED
+- Network transmission abstraction: ADDED
+
+Build status:
+- Not executed in sandbox because .NET SDK is not installed.

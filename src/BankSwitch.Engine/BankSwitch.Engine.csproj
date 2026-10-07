@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker"><PropertyGroup>  <UserSecretsId>329baa00-b4df-4f68-947b-8c6d363ba713</UserSecretsId>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BankSwitch.Application\BankSwitch.Application.csproj" />
+    <ProjectReference Include="..\BankSwitch.Domain\BankSwitch.Domain.csproj" />
+    <ProjectReference Include="..\BankSwitch.Infrastructure\BankSwitch.Infrastructure.csproj" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" />
+    <PackageReference Include="Serilog.AspNetCore" />
+    <PackageReference Include="Serilog.Sinks.Console" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="appsettings.Production.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

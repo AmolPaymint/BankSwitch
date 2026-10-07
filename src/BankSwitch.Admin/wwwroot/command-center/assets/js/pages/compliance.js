@@ -1,0 +1,2 @@
+import { liveModule } from "../core/live-module.js";
+export async function render(root){return liveModule(root,{"eyebrow": "Compliance Evidence", "title": "Regulatory Compliance & Audit", "description": "Live controls, evidence, findings and compliance packs", "sources": [{"label": "Dashboard", "path": "/compliance-evidence/dashboard"}, {"label": "Controls", "path": "/compliance-evidence/controls"}, {"label": "Evidence", "path": "/compliance-evidence/evidence"}, {"label": "Findings", "path": "/compliance-evidence/security-findings"}]});}

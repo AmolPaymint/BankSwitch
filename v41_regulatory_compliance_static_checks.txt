@@ -1,0 +1,13 @@
+V41 Regulatory Compliance, Audit & Evidence Pack Core - static check summary
+
+Verified by filesystem/static inspection in sandbox:
+- Application service added: src/BankSwitch.Application/ComplianceEvidenceCore.cs
+- Admin API endpoints added: src/BankSwitch.Admin/Endpoints/ComplianceEvidenceEndpoints.cs
+- DI registration added in Program.cs: IComplianceEvidenceRepository, IComplianceEvidenceService
+- Endpoint mapping added in Program.cs: app.MapComplianceEvidenceEndpoints()
+- DB migration added: db/034_regulatory_compliance_audit_evidence_pack.sql
+- Documentation added: V41_REGULATORY_COMPLIANCE_AUDIT_EVIDENCE_PACK.md
+- README.md and ARCHITECTURE_MIGRATION.md updated with V41 summary
+
+Build note:
+- .NET SDK is not installed in this sandbox, so compile/build execution could not be performed here.

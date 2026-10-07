@@ -1,0 +1,9 @@
+import { api } from '../core/api.js';
+import { pageHero,kpi,hasPolicy } from '../components/layout.js';
+import { mountTable,tag } from '../core/utils.js';
+export async function render(root){
+  const tx=await api.transactions({pageSize:25});
+  let ops=null; if(hasPolicy('Operations')){ try{ops=await api.operations();}catch{} }
+  const d=ops?.dashboard||{};
+  root.innerHTML=pageHero('ISO8583 Operations','Switch Operations','Live transaction lifecycle, replay/duplicate controls, network state, incidents and technical decline visibility.',`<a class="btn primary" href="/Monitoring">Monitoring</a><a class="btn" href="#/routing">Routing</a>`)+`<div class="grid cols-4">${kpi('Components',d.components??'—',`${d.healthyComponents??'—'} healthy`)}${kpi('Open Incidents',d.openIncidents??'—',`${d.criticalIncidents??0} critical`,'var(--yellow)')}${kpi('Technical Declines',d.technicalDeclinesToday??'—','today')}${kpi('Availability',d.averageAvailability!=null?`${Number(d.averageAvailability).toFixed(2)}%`:'—','command center')}</div><div class="divider"></div><div class="grid cols-3"><div class="card pad"><h2 class="section-title">Pipeline Controls</h2><div class="wizard">${['Frame Decode','Strict Validation','MAC Verification','Route Resolution','CMS Authorization','Sink Forward','Response MAC'].map((s,i)=>`<div class="wizard-step"><div class="step-num">${i+1}</div><div><b>${s}</b><div class="muted">Production pipeline</div></div>${tag('Enabled','green')}</div>`).join('')}</div></div><div class="card pad" style="grid-column:span 2"><h2 class="section-title">Recent Switch Trace</h2>${mountTable(['Time','RRN','STAN','MTI','Source','Scheme','Response','State'],(tx.items||[]).map(t=>[new Date(t.time).toLocaleTimeString(),t.rrn,t.stan,t.mti,t.sourceNode,t.scheme,t.response,tag(t.state,t.response==='00'?'green':'yellow')]))}</div></div>`;
+}

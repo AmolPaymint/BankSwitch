@@ -1,0 +1,21 @@
+@page
+@model BankSwitch.Admin.Pages.Configuration.SinkNodes.IndexModel
+<h1>Sink nodes</h1>
+<p><a asp-page="/Configuration/SinkNodes/Edit">Add new sink node</a></p>
+<table>
+    <thead><tr><th>Node ID</th><th>Name</th><th>Host:Port</th><th>Active</th><th>TPS limit</th><th>Key profile</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var node in Model.Nodes)
+    {
+        <tr>
+            <td>@node.NodeId</td>
+            <td>@node.Name</td>
+            <td>@node.Host:@node.Port</td>
+            <td>@(node.IsActive ? "Yes" : "No")</td>
+            <td>@node.Limits.TpsLimit</td>
+            <td>@node.KeyProfile</td>
+            <td><a asp-page="/Configuration/SinkNodes/Edit" asp-route-id="@node.Id">Edit</a></td>
+        </tr>
+    }
+    </tbody>
+</table>

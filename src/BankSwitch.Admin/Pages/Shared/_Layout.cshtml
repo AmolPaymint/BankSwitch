@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BankSwitch Admin</title>
+    <style>
+        body { font-family: system-ui, sans-serif; margin: 2rem; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: .5rem; vertical-align: top; }
+        input, textarea, select { width: 100%; max-width: 48rem; }
+        .danger { color: #a40000; }
+    </style>
+</head>
+<body>
+    <header>
+        <strong>BankSwitch Admin</strong>
+        <nav><a href="/CommandCenter">Command Center</a> | <a asp-page="/Index">Home</a> | <a asp-page="/Configuration/Index">Configuration</a> | <a asp-page="/Security/Tokens/Index">Security</a> | <a asp-page="/Monitoring/Index">Monitoring</a> | <a asp-page="/Reports/Transactions">Transaction report</a> | <a asp-page="/ConfigChanges/Index">Maker-checker</a> | <a asp-page="/Account/Logout">Logout</a></nav>
+    </header>
+    <main>@RenderBody()</main>
+</body>
+</html>

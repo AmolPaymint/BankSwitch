@@ -1,0 +1,96 @@
+{{- if .Values.engine.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "bankswitch.fullname" . }}-engine
+  namespace: {{ .Values.namespace.name }}
+  labels:
+    {{- include "bankswitch.labels" . | nindent 4 }}
+    app.kubernetes.io/component: engine
+spec:
+  replicas: {{ .Values.engine.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "bankswitch.engine.selectorLabels" . | nindent 6 }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0    # zero-downtime rolling update
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        {{- include "bankswitch.labels" . | nindent 8 }}
+        {{- include "bankswitch.engine.selectorLabels" . | nindent 8 }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port:   "5000"
+        prometheus.io/path:   "/metrics"
+        # Force pod restart when ConfigMap changes (checksum annotation)
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+    spec:
+      serviceAccountName: {{ include "bankswitch.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      terminationGracePeriodSeconds: {{ .Values.engine.terminationGracePeriodSeconds }}
+      {{- with .Values.engine.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.engine.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.engine.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: engine
+          image: "{{ .Values.engine.image.registry }}:{{ .Values.engine.image.tag }}"
+          imagePullPolicy: {{ .Values.engine.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.containerSecurityContext | nindent 12 }}
+          ports:
+            - name: iso8583
+              containerPort: 8080
+              protocol: TCP
+            - name: http
+              containerPort: 5000
+              protocol: TCP
+          env:
+            {{- range $k, $v := .Values.engine.env }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+            {{- range $k, $v := .Values.engine.configuration }}
+            - name: {{ $k }}
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "bankswitch.fullname" $ }}-config
+                  key: {{ $k }}
+            {{- end }}
+            {{- range .Values.engine.secretEnv }}
+            - name: {{ .name }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .secretKeyRef.name }}
+                  key: {{ .secretKeyRef.key }}
+            {{- end }}
+          livenessProbe:
+            {{- toYaml .Values.engine.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.engine.readinessProbe | nindent 12 }}
+          resources:
+            {{- toYaml .Values.engine.resources | nindent 12 }}
+          volumeMounts:
+            - name: clearing-files
+              mountPath: /app/clearing-files
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: clearing-files
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
+{{- end }}

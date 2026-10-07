@@ -1,0 +1,118 @@
+{{- if .Values.namespace.create -}}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.namespace.name }}
+  labels:
+    {{- toYaml .Values.namespace.labels | nindent 4 }}
+{{- end }}
+
+---
+{{- if .Values.serviceAccount.create -}}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "bankswitch.serviceAccountName" . }}
+  namespace: {{ .Values.namespace.name }}
+  labels:
+    {{- include "bankswitch.labels" . | nindent 4 }}
+  {{- with .Values.serviceAccount.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}
+
+---
+# Engine Service — LoadBalancer for external ISO 8583 TCP connections
+{{- if .Values.engine.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "bankswitch.fullname" . }}-engine
+  namespace: {{ .Values.namespace.name }}
+  labels:
+    {{- include "bankswitch.labels" . | nindent 4 }}
+    app.kubernetes.io/component: engine
+  {{- with .Values.engine.service.isoPortAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.engine.service.type }}
+  selector:
+    {{- include "bankswitch.engine.selectorLabels" . | nindent 4 }}
+  ports:
+    - name: iso8583
+      port: {{ .Values.engine.service.isoPort }}
+      targetPort: iso8583
+      protocol: TCP
+    - name: http-health
+      port: {{ .Values.engine.service.httpPort }}
+      targetPort: http
+      protocol: TCP
+  # Session affinity ensures TCP connections stay on the same pod
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 3600
+{{- end }}
+
+---
+# Admin Service — ClusterIP (exposed via Ingress)
+{{- if .Values.admin.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "bankswitch.fullname" . }}-admin
+  namespace: {{ .Values.namespace.name }}
+  labels:
+    {{- include "bankswitch.labels" . | nindent 4 }}
+    app.kubernetes.io/component: admin
+spec:
+  type: {{ .Values.admin.service.type }}
+  selector:
+    {{- include "bankswitch.admin.selectorLabels" . | nindent 4 }}
+  ports:
+    - name: http
+      port: {{ .Values.admin.service.port }}
+      targetPort: http
+      protocol: TCP
+{{- end }}
+
+---
+# ConfigMap for non-secret Engine configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "bankswitch.fullname" . }}-config
+  namespace: {{ .Values.namespace.name }}
+  labels:
+    {{- include "bankswitch.labels" . | nindent 4 }}
+data:
+  {{- range $k, $v := .Values.engine.configuration }}
+  {{ $k }}: {{ $v | quote }}
+  {{- end }}
+
+---
+# ServiceMonitor for Prometheus scraping (requires prometheus-operator)
+{{- if .Values.monitoring.serviceMonitor.enabled -}}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "bankswitch.fullname" . }}-engine
+  namespace: {{ .Values.monitoring.serviceMonitor.namespace }}
+  labels:
+    {{- include "bankswitch.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "bankswitch.engine.selectorLabels" . | nindent 6 }}
+  endpoints:
+    - port: http-health
+      path: {{ .Values.monitoring.serviceMonitor.path }}
+      interval: {{ .Values.monitoring.serviceMonitor.interval }}
+      scrapeTimeout: {{ .Values.monitoring.serviceMonitor.scrapeTimeout }}
+  namespaceSelector:
+    matchNames:
+      - {{ .Values.namespace.name }}
+{{- end }}

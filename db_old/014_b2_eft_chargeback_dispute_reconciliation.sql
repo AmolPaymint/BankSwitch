@@ -1,0 +1,203 @@
+-- ============================================================
+-- Migration 014 — B2: EFT Rails, Chargeback, Dispute, Reconciliation
+-- Apply after 001 through 013.
+-- ============================================================
+
+-- Extend EftTransfers for return / MMID / mandate fields
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=OBJECT_ID('dbo.EftTransfers') AND name='IsReturn')
+    ALTER TABLE dbo.EftTransfers ADD IsReturn BIT NOT NULL CONSTRAINT DF_Eft_IsReturn DEFAULT(0);
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=OBJECT_ID('dbo.EftTransfers') AND name='ReturnReasonCode')
+    ALTER TABLE dbo.EftTransfers ADD ReturnReasonCode NVARCHAR(8) NOT NULL CONSTRAINT DF_Eft_ReturnCode DEFAULT('');
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=OBJECT_ID('dbo.EftTransfers') AND name='OriginalTransferId')
+    ALTER TABLE dbo.EftTransfers ADD OriginalTransferId UNIQUEIDENTIFIER NULL;
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=OBJECT_ID('dbo.EftTransfers') AND name='MmidNumber')
+    ALTER TABLE dbo.EftTransfers ADD MmidNumber NVARCHAR(7) NOT NULL CONSTRAINT DF_Eft_Mmid DEFAULT('');
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=OBJECT_ID('dbo.EftTransfers') AND name='MobileNumber')
+    ALTER TABLE dbo.EftTransfers ADD MobileNumber NVARCHAR(10) NOT NULL CONSTRAINT DF_Eft_Mobile DEFAULT('');
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=OBJECT_ID('dbo.EftTransfers') AND name='NpciTransactionId')
+    ALTER TABLE dbo.EftTransfers ADD NpciTransactionId NVARCHAR(64) NOT NULL CONSTRAINT DF_Eft_Npci DEFAULT('');
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id=OBJECT_ID('dbo.EftTransfers') AND name='DirectDebitMandateId')
+    ALTER TABLE dbo.EftTransfers ADD DirectDebitMandateId UNIQUEIDENTIFIER NULL;
+
+-- NEFT Batches
+IF OBJECT_ID('dbo.NeftBatches','U') IS NULL
+CREATE TABLE dbo.NeftBatches(
+    Id UNIQUEIDENTIFIER NOT NULL CONSTRAINT PK_NeftBatches PRIMARY KEY DEFAULT NEWID(),
+    BatchReference NVARCHAR(64) NOT NULL, CycleId NVARCHAR(32) NOT NULL,
+    MemberId NVARCHAR(4) NOT NULL CONSTRAINT DF_NB_Member DEFAULT(''),
+    SettlementDate DATE NOT NULL, SessionNumber INT NOT NULL CONSTRAINT DF_NB_Session DEFAULT(0),
+    RecordCount INT NOT NULL CONSTRAINT DF_NB_Count DEFAULT(0),
+    TotalAmount DECIMAL(18,4) NOT NULL CONSTRAINT DF_NB_Total DEFAULT(0),
+    CurrencyCode NVARCHAR(3) NOT NULL CONSTRAINT DF_NB_Ccy DEFAULT('356'),
+    Status NVARCHAR(32) NOT NULL CONSTRAINT DF_NB_Status DEFAULT('Draft'),
+    FileContent NVARCHAR(MAX) NOT NULL CONSTRAINT DF_NB_Content DEFAULT(''),
+    OutputFilePath NVARCHAR(500) NOT NULL CONSTRAINT DF_NB_Path DEFAULT(''),
+    NpciAckReference NVARCHAR(64) NOT NULL CONSTRAINT DF_NB_Ack DEFAULT(''),
+    CreatedAt DATETIMEOFFSET NOT NULL CONSTRAINT DF_NB_Created DEFAULT(SYSUTCDATETIME()),
+    SubmittedAt DATETIMEOFFSET NULL, SettledAt DATETIMEOFFSET NULL);
+
+-- SWIFT Messages
+IF OBJECT_ID('dbo.SwiftMessages','U') IS NULL
+CREATE TABLE dbo.SwiftMessages(
+    Id UNIQUEIDENTIFIER NOT NULL CONSTRAINT PK_SwiftMessages PRIMARY KEY DEFAULT NEWID(),
+    MessageType NVARCHAR(8) NOT NULL, Status NVARCHAR(16) NOT NULL,
+    EftTransferId UNIQUEIDENTIFIER NOT NULL,
+    SenderBic NVARCHAR(11) NOT NULL CONSTRAINT DF_SM_Sender DEFAULT(''),
+    ReceiverBic NVARCHAR(11) NOT NULL CONSTRAINT DF_SM_Rcvr DEFAULT(''),
+    TransactionReference NVARCHAR(16) NOT NULL CONSTRAINT DF_SM_TxnRef DEFAULT(''),
+    ValueDate NVARCHAR(6) NOT NULL CONSTRAINT DF_SM_ValDate DEFAULT(''),
+    CurrencyCode NVARCHAR(3) NOT NULL CONSTRAINT DF_SM_Ccy DEFAULT(''),
+    Amount DECIMAL(18,4) NOT NULL CONSTRAINT DF_SM_Amt DEFAULT(0),
+    RawMessageContent NVARCHAR(MAX) NOT NULL CONSTRAINT DF_SM_Raw DEFAULT(''),
+    AckReference NVARCHAR(64) NOT NULL CONSTRAINT DF_SM_AckRef DEFAULT(''),
+    CreatedAt DATETIMEOFFSET NOT NULL CONSTRAINT DF_SM_Created DEFAULT(SYSUTCDATETIME()),
+    SentAt DATETIMEOFFSET NULL, AcknowledgedAt DATETIMEOFFSET NULL);
+
+-- ACH Files
+IF OBJECT_ID('dbo.AchFiles','U') IS NULL
+CREATE TABLE dbo.AchFiles(
+    Id UNIQUEIDENTIFIER NOT NULL CONSTRAINT PK_AchFiles PRIMARY KEY DEFAULT NEWID(),
+    FileReference NVARCHAR(64) NOT NULL, FileType NVARCHAR(16) NOT NULL,
+    EntryType NVARCHAR(4) NOT NULL CONSTRAINT DF_AF_Entry DEFAULT('CCD'),
+    Status NVARCHAR(16) NOT NULL CONSTRAINT DF_AF_Status DEFAULT('Draft'),
+    OriginatingDfi NVARCHAR(9) NOT NULL CONSTRAINT DF_AF_Dfi DEFAULT(''),
+    OriginatingCompanyId NVARCHAR(10) NOT NULL CONSTRAINT DF_AF_CoId DEFAULT(''),
+    OriginatingCompanyName NVARCHAR(16) NOT NULL CONSTRAINT DF_AF_CoName DEFAULT(''),
+    EffectiveDate DATE NOT NULL,
+    RecordCount INT NOT NULL CONSTRAINT DF_AF_Count DEFAULT(0),
+    TotalDebitAmount DECIMAL(18,4) NOT NULL CONSTRAINT DF_AF_Debit DEFAULT(0),
+    TotalCreditAmount DECIMAL(18,4) NOT NULL CONSTRAINT DF_AF_Credit DEFAULT(0),
+    FileContent NVARCHAR(MAX) NOT NULL CONSTRAINT DF_AF_Content DEFAULT(''),
+    OutputFilePath NVARCHAR(500) NOT NULL CONSTRAINT DF_AF_Path DEFAULT(''),
+    CreatedAt DATETIMEOFFSET NOT NULL CONSTRAINT DF_AF_Created DEFAULT(SYSUTCDATETIME()),
+    SubmittedAt DATETIMEOFFSET NULL, SettledAt DATETIMEOFFSET NULL);
+
+-- Direct Debit Mandates
+IF OBJECT_ID('dbo.DirectDebitMandates','U') IS NULL
+CREATE TABLE dbo.DirectDebitMandates(
+    Id UNIQUEIDENTIFIER NOT NULL CONSTRAINT PK_DirectDebitMandates PRIMARY KEY DEFAULT NEWID(),
+    MandateReference NVARCHAR(30) NOT NULL, CustomerNumber NVARCHAR(64) NOT NULL,
+    CustomerId UNIQUEIDENTIFIER NOT NULL,
+    DebtorAccountNumber NVARCHAR(20) NOT NULL, DebtorIfscCode NVARCHAR(11) NOT NULL,
+    DebtorBankName NVARCHAR(100) NOT NULL CONSTRAINT DF_DDM_DebtorBank DEFAULT(''),
+    CreditorAccountNumber NVARCHAR(20) NOT NULL, CreditorIfscCode NVARCHAR(11) NOT NULL,
+    CreditorName NVARCHAR(100) NOT NULL CONSTRAINT DF_DDM_CredName DEFAULT(''),
+    MaximumAmount DECIMAL(18,4) NOT NULL, CurrencyCode NVARCHAR(3) NOT NULL CONSTRAINT DF_DDM_Ccy DEFAULT('356'),
+    Frequency NVARCHAR(16) NOT NULL, Status NVARCHAR(16) NOT NULL,
+    StartDate DATE NOT NULL, EndDate DATE NULL,
+    CreatedAt DATETIMEOFFSET NOT NULL CONSTRAINT DF_DDM_Created DEFAULT(SYSUTCDATETIME()),
+    ActivatedAt DATETIMEOFFSET NULL, CancelledAt DATETIMEOFFSET NULL,
+    CancellationReason NVARCHAR(500) NOT NULL CONSTRAINT DF_DDM_CancelReason DEFAULT(''),
+    LastChargedDate DATE NULL, SuccessfulDebitCount INT NOT NULL CONSTRAINT DF_DDM_DebitCount DEFAULT(0));
+
+-- Chargeback Reason Codes
+IF OBJECT_ID('dbo.ChargebackReasonCodes','U') IS NULL
+CREATE TABLE dbo.ChargebackReasonCodes(
+    Id UNIQUEIDENTIFIER NOT NULL CONSTRAINT PK_ChargebackReasonCodes PRIMARY KEY DEFAULT NEWID(),
+    Network NVARCHAR(16) NOT NULL, Code NVARCHAR(16) NOT NULL,
+    Category NVARCHAR(64) NOT NULL CONSTRAINT DF_CRC_Cat DEFAULT(''),
+    Description NVARCHAR(200) NOT NULL CONSTRAINT DF_CRC_Desc DEFAULT(''),
+    InitialChargebackDays INT NOT NULL CONSTRAINT DF_CRC_Initial DEFAULT(120),
+    RepresentmentDays INT NOT NULL CONSTRAINT DF_CRC_Repr DEFAULT(45),
+    PreArbitrationDays INT NOT NULL CONSTRAINT DF_CRC_PreArb DEFAULT(45),
+    ArbitrationDays INT NOT NULL CONSTRAINT DF_CRC_Arb DEFAULT(10),
+    RepresentmentAllowed BIT NOT NULL CONSTRAINT DF_CRC_ReprAllowed DEFAULT(1),
+    IsActive BIT NOT NULL CONSTRAINT DF_CRC_Active DEFAULT(1),
+    CONSTRAINT UX_ChargebackReasonCodes UNIQUE(Network, Code));
+
+-- Chargeback Cases
+IF OBJECT_ID('dbo.ChargebackCases','U') IS NULL
+CREATE TABLE dbo.ChargebackCases(
+    Id UNIQUEIDENTIFIER NOT NULL CONSTRAINT PK_ChargebackCases PRIMARY KEY DEFAULT NEWID(),
+    CaseReference NVARCHAR(64) NOT NULL, Network NVARCHAR(16) NOT NULL,
+    Stage NVARCHAR(32) NOT NULL, Outcome NVARCHAR(32) NOT NULL CONSTRAINT DF_CC_Outcome DEFAULT('Pending'),
+    OriginalTransactionCorrelationId NVARCHAR(64) NOT NULL CONSTRAINT DF_CC_OrgCorr DEFAULT(''),
+    Rrn NVARCHAR(12) NOT NULL CONSTRAINT DF_CC_Rrn DEFAULT(''),
+    Stan NVARCHAR(12) NOT NULL CONSTRAINT DF_CC_Stan DEFAULT(''),
+    MaskedPan NVARCHAR(32) NOT NULL CONSTRAINT DF_CC_Pan DEFAULT(''),
+    PanHash NVARCHAR(128) NOT NULL CONSTRAINT DF_CC_PanHash DEFAULT(''),
+    TransactionAmount DECIMAL(18,4) NOT NULL, ChargebackAmount DECIMAL(18,4) NOT NULL,
+    CurrencyCode NVARCHAR(3) NOT NULL, TransactionDate DATE NOT NULL,
+    ReasonCode NVARCHAR(16) NOT NULL CONSTRAINT DF_CC_Code DEFAULT(''),
+    ReasonDescription NVARCHAR(200) NOT NULL CONSTRAINT DF_CC_Desc DEFAULT(''),
+    NetworkCaseId NVARCHAR(64) NOT NULL CONSTRAINT DF_CC_NetId DEFAULT(''),
+    MerchantId NVARCHAR(64) NOT NULL CONSTRAINT DF_CC_Merch DEFAULT(''),
+    ChargebackReceivedDate DATE NOT NULL,
+    RepresentmentDeadline DATE NOT NULL,
+    RepresentmentSubmittedDate DATE NULL,
+    PreArbitrationDeadline DATE NULL, PreArbitrationReceivedDate DATE NULL,
+    ArbitrationDeadline DATE NULL, ArbitrationSubmittedDate DATE NULL, ResolvedDate DATE NULL,
+    IssuerEvidenceSummary NVARCHAR(MAX) NOT NULL CONSTRAINT DF_CC_IssEv DEFAULT(''),
+    AcquirerEvidenceSummary NVARCHAR(MAX) NOT NULL CONSTRAINT DF_CC_AcqEv DEFAULT(''),
+    ResolutionNotes NVARCHAR(MAX) NOT NULL CONSTRAINT DF_CC_ResNotes DEFAULT(''),
+    CreatedAt DATETIMEOFFSET NOT NULL CONSTRAINT DF_CC_Created DEFAULT(SYSUTCDATETIME()),
+    UpdatedAt DATETIMEOFFSET NULL, LastUpdatedBy NVARCHAR(128) NOT NULL CONSTRAINT DF_CC_UpdatedBy DEFAULT(''));
+CREATE INDEX IX_ChargebackCases_Stage ON dbo.ChargebackCases(Stage, Network);
+
+-- Customer Disputes
+IF OBJECT_ID('dbo.CustomerDisputes','U') IS NULL
+CREATE TABLE dbo.CustomerDisputes(
+    Id UNIQUEIDENTIFIER NOT NULL CONSTRAINT PK_CustomerDisputes PRIMARY KEY DEFAULT NEWID(),
+    DisputeReference NVARCHAR(32) NOT NULL, CustomerNumber NVARCHAR(64) NOT NULL,
+    CustomerId UNIQUEIDENTIFIER NOT NULL, DisputeType NVARCHAR(32) NOT NULL,
+    Status NVARCHAR(32) NOT NULL, Rrn NVARCHAR(12) NOT NULL CONSTRAINT DF_CD_Rrn DEFAULT(''),
+    Stan NVARCHAR(12) NOT NULL CONSTRAINT DF_CD_Stan DEFAULT(''),
+    MaskedPan NVARCHAR(32) NOT NULL CONSTRAINT DF_CD_Pan DEFAULT(''),
+    DisputedAmount DECIMAL(18,4) NOT NULL, CurrencyCode NVARCHAR(3) NOT NULL,
+    TransactionDate DATE NOT NULL, MerchantName NVARCHAR(200) NOT NULL CONSTRAINT DF_CD_Merch DEFAULT(''),
+    CustomerStatement NVARCHAR(MAX) NOT NULL CONSTRAINT DF_CD_Stmt DEFAULT(''),
+    InternalNotes NVARCHAR(MAX) NOT NULL CONSTRAINT DF_CD_Notes DEFAULT(''),
+    Channel NVARCHAR(32) NOT NULL CONSTRAINT DF_CD_Channel DEFAULT(''),
+    LinkedChargebackId UNIQUEIDENTIFIER NULL,
+    AwardedAmount DECIMAL(18,4) NULL, ResolutionNotes NVARCHAR(MAX) NOT NULL CONSTRAINT DF_CD_ResNotes DEFAULT(''),
+    ReceivedAt DATETIMEOFFSET NOT NULL CONSTRAINT DF_CD_Received DEFAULT(SYSUTCDATETIME()),
+    EvidenceDeadline DATETIMEOFFSET NULL, EscalatedAt DATETIMEOFFSET NULL,
+    ResolvedAt DATETIMEOFFSET NULL, UpdatedAt DATETIMEOFFSET NULL);
+
+IF OBJECT_ID('dbo.DisputeEvidence','U') IS NULL
+CREATE TABLE dbo.DisputeEvidence(
+    Id UNIQUEIDENTIFIER NOT NULL CONSTRAINT PK_DisputeEvidence PRIMARY KEY DEFAULT NEWID(),
+    DisputeId UNIQUEIDENTIFIER NOT NULL, EvidenceType NVARCHAR(32) NOT NULL,
+    Description NVARCHAR(500) NOT NULL CONSTRAINT DF_DE_Desc DEFAULT(''),
+    DocumentVaultReference NVARCHAR(500) NOT NULL CONSTRAINT DF_DE_Vault DEFAULT(''),
+    SubmittedBy NVARCHAR(128) NOT NULL CONSTRAINT DF_DE_By DEFAULT(''),
+    SubmittedByRole NVARCHAR(64) NOT NULL CONSTRAINT DF_DE_Role DEFAULT(''),
+    SubmittedAt DATETIMEOFFSET NOT NULL CONSTRAINT DF_DE_At DEFAULT(SYSUTCDATETIME()));
+CREATE INDEX IX_DisputeEvidence_Dispute ON dbo.DisputeEvidence(DisputeId);
+
+-- Reconciliation Runs
+IF OBJECT_ID('dbo.ReconciliationRuns','U') IS NULL
+CREATE TABLE dbo.ReconciliationRuns(
+    Id UNIQUEIDENTIFIER NOT NULL CONSTRAINT PK_ReconciliationRuns PRIMARY KEY DEFAULT NEWID(),
+    BusinessDate DATE NOT NULL, Status NVARCHAR(32) NOT NULL,
+    TransactionLogCount INT NOT NULL CONSTRAINT DF_RR_TxCount DEFAULT(0),
+    LedgerEntryCount INT NOT NULL CONSTRAINT DF_RR_LedCount DEFAULT(0),
+    GlJournalLineCount INT NOT NULL CONSTRAINT DF_RR_GlCount DEFAULT(0),
+    ClearingRecordCount INT NOT NULL CONSTRAINT DF_RR_ClCount DEFAULT(0),
+    MatchedCount INT NOT NULL CONSTRAINT DF_RR_Matched DEFAULT(0),
+    BreakCount INT NOT NULL CONSTRAINT DF_RR_Breaks DEFAULT(0),
+    TotalSwitchAmount DECIMAL(18,4) NOT NULL CONSTRAINT DF_RR_SwAmt DEFAULT(0),
+    TotalLedgerAmount DECIMAL(18,4) NOT NULL CONSTRAINT DF_RR_LedAmt DEFAULT(0),
+    TotalGlAmount DECIMAL(18,4) NOT NULL CONSTRAINT DF_RR_GlAmt DEFAULT(0),
+    RunTrigger NVARCHAR(32) NOT NULL CONSTRAINT DF_RR_Trigger DEFAULT('Scheduled'),
+    TriggeredBy NVARCHAR(128) NOT NULL CONSTRAINT DF_RR_By DEFAULT(''),
+    StartedAt DATETIMEOFFSET NOT NULL CONSTRAINT DF_RR_Started DEFAULT(SYSUTCDATETIME()),
+    CompletedAt DATETIMEOFFSET NULL);
+CREATE INDEX IX_ReconciliationRuns_Date ON dbo.ReconciliationRuns(BusinessDate, StartedAt DESC);
+
+-- Reconciliation Breaks
+IF OBJECT_ID('dbo.ReconciliationBreaks','U') IS NULL
+CREATE TABLE dbo.ReconciliationBreaks(
+    Id UNIQUEIDENTIFIER NOT NULL CONSTRAINT PK_ReconciliationBreaks PRIMARY KEY DEFAULT NEWID(),
+    ReconciliationRunId UNIQUEIDENTIFIER NOT NULL,
+    BreakType NVARCHAR(64) NOT NULL, CorrelationId NVARCHAR(64) NOT NULL CONSTRAINT DF_RB_Corr DEFAULT(''),
+    Rrn NVARCHAR(12) NOT NULL CONSTRAINT DF_RB_Rrn DEFAULT(''),
+    SwitchAmount DECIMAL(18,4) NULL, LedgerAmount DECIMAL(18,4) NULL,
+    GlAmount DECIMAL(18,4) NULL, ClearingAmount DECIMAL(18,4) NULL,
+    Description NVARCHAR(MAX) NOT NULL CONSTRAINT DF_RB_Desc DEFAULT(''),
+    IsResolved BIT NOT NULL CONSTRAINT DF_RB_Resolved DEFAULT(0),
+    ResolutionNotes NVARCHAR(500) NOT NULL CONSTRAINT DF_RB_ResNotes DEFAULT(''),
+    DetectedAt DATETIMEOFFSET NOT NULL CONSTRAINT DF_RB_Detected DEFAULT(SYSUTCDATETIME()),
+    ResolvedAt DATETIMEOFFSET NULL,
+    CONSTRAINT FK_ReconciliationBreaks_Run FOREIGN KEY(ReconciliationRunId) REFERENCES dbo.ReconciliationRuns(Id));
+CREATE INDEX IX_ReconciliationBreaks_Run ON dbo.ReconciliationBreaks(ReconciliationRunId, IsResolved);
