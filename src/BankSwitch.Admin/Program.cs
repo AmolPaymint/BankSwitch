@@ -12,6 +12,14 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+Console.WriteLine("========================================");
+Console.WriteLine($"ASPNETCORE_ENVIRONMENT = {Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}");
+Console.WriteLine($"DOTNET_ENVIRONMENT     = {Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")}");
+Console.WriteLine($"Builder Environment    = {builder.Environment.EnvironmentName}");
+Console.WriteLine($"IsDevelopment          = {builder.Environment.IsDevelopment()}");
+Console.WriteLine($"IsProduction           = {builder.Environment.IsProduction()}");
+Console.WriteLine("========================================");
+
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
     .Enrich.FromLogContext()
@@ -53,7 +61,11 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.SlidingExpiration = true;
         options.ExpireTimeSpan = TimeSpan.FromMinutes(builder.Configuration.GetValue("Admin:SessionTimeoutMinutes", 15));
         options.Cookie.HttpOnly = true;
-        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        //options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+
+            options.Cookie.SecurePolicy =  builder.Environment.IsDevelopment()
+                ? CookieSecurePolicy.SameAsRequest
+                : CookieSecurePolicy.Always;
         options.Cookie.SameSite = SameSiteMode.Strict;
     });
 
@@ -68,18 +80,30 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("SecurityAdmin", policy => policy.RequireRole("SecurityAdmin", "SuperAdmin"));
 });
 
+// builder.Services.AddAntiforgery(options =>
+// {
+//     options.Cookie.HttpOnly = true;
+//     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+//     options.Cookie.SameSite = SameSiteMode.Strict;
+// });
+
 builder.Services.AddAntiforgery(options =>
 {
-    options.Cookie.HttpOnly = true;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-    options.Cookie.SameSite = SameSiteMode.Strict;
+    options.Cookie.SecurePolicy =
+        builder.Environment.IsDevelopment()
+            ? CookieSecurePolicy.SameAsRequest
+            : CookieSecurePolicy.Always;
 });
 
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(builder.Configuration.GetValue("Admin:SessionTimeoutMinutes", 15));
     options.Cookie.HttpOnly = true;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+   // options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SecurePolicy =
+        builder.Environment.IsDevelopment()
+            ? CookieSecurePolicy.SameAsRequest
+            : CookieSecurePolicy.Always;
     options.Cookie.SameSite = SameSiteMode.Strict;
 });
 
@@ -579,7 +603,11 @@ builder.Services.AddSingleton<IEnterpriseConfigurationControlPlane, EnterpriseCo
 var app = builder.Build();
 
 app.UseForwardedHeaders();
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+//app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 // B7 — OWASP security headers (CSP, HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy)
@@ -588,7 +616,7 @@ app.UseOwaspSecurityHeaders();
 app.UseApiRateLimiting();
 
 app.UseRouting();
-app.UseIpAllowList(builder.Configuration);
+//app.UseIpAllowList(builder.Configuration);
 app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();

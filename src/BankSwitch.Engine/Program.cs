@@ -29,7 +29,8 @@ builder.Services.AddSingleton<ISensitiveDataProtector>(sp =>
 var repositoryProvider = builder.Configuration["Repository:Provider"] ?? "InMemory";
 if (string.Equals(repositoryProvider, "SqlServer", StringComparison.OrdinalIgnoreCase))
 {
-    builder.Services.AddSingleton<SecureSqlConnectionFactory>();
+    //builder.Services.AddSingleton<SecureSqlConnectionFactory>();
+    builder.Services.AddSingleton<SecurePostgresConnectionFactory>();
     builder.Services.AddSingleton<SqlSwitchRepository>();
     builder.Services.AddSingleton<SqlPrepaidCmsRepository>();
     builder.Services.AddSingleton<SqlOperationalControlRepository>();

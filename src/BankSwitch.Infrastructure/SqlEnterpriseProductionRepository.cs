@@ -627,7 +627,25 @@ public sealed class SqlEnterpriseProductionRepository : IEnterpriseProductionRep
     private static int I(NpgsqlDataReader r, string name) => r[name] == DBNull.Value ? 0 : Convert.ToInt32(r[name]);
     private static decimal M(NpgsqlDataReader r, string name) => r[name] == DBNull.Value ? 0m : Convert.ToDecimal(r[name]);
     private static bool B(NpgsqlDataReader r, string name) => r[name] != DBNull.Value && Convert.ToBoolean(r[name]);
-    private static DateTimeOffset Dto(NpgsqlDataReader r, string name) => r[name] == DBNull.Value ? DateTimeOffset.MinValue : (DateTimeOffset)r[name];
+   // private static DateTimeOffset Dto(NpgsqlDataReader r, string name) => r[name] == DBNull.Value ? DateTimeOffset.MinValue : (DateTimeOffset)r[name];
+    private static DateTimeOffset Dto(NpgsqlDataReader r, string name)
+    {
+        if (r[name] == DBNull.Value)
+            return DateTimeOffset.MinValue;
+
+        var value = r[name];
+
+        return value switch
+        {
+            DateTimeOffset dto => dto,
+
+            DateTime dt => new DateTimeOffset(
+                DateTime.SpecifyKind(dt, DateTimeKind.Utc)),
+
+            _ => throw new InvalidCastException(
+                $"Column '{name}' returned unexpected type '{value.GetType().FullName}'.")
+        };
+    }
     private static DateTimeOffset? NDto(NpgsqlDataReader r, string name) => r[name] == DBNull.Value ? null : (DateTimeOffset)r[name];
     private static Guid? NG(NpgsqlDataReader r, string name) => r[name] == DBNull.Value ? null : r.GetGuid(r.GetOrdinal(name));
     private static T E<T>(NpgsqlDataReader r, string name) where T : struct => Enum.TryParse<T>(S(r, name), true, out var value) ? value : default;

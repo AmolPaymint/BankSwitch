@@ -369,7 +369,7 @@ public sealed class FinancialProcessingB4Tests
         var posRepo = NullSettlementPositionRepository.Instance;
         var reconRepo = new InMemoryReconciliationRepository();
         var reconEngine = new ReconciliationEngine(reconRepo, txnRepo, cmsRepo, journalRepo as InMemoryFinancialOperationsRepository ?? new InMemoryFinancialOperationsRepository(), clearing, audit, clock, new ReconciliationOptions());
-        return new EndOfDayService(periodRepo, acctSvc, new InMemoryClearingEngineService(), glSvc, reconEngine, journalRepo, audit, clock, NullLogger<EndOfDayService>.Instance);
+        return new EndOfDayService(periodRepo, acctSvc, new InMemoryClearingEngineService(), null ,reconEngine, journalRepo, audit, clock, NullLogger<EndOfDayService>.Instance);
     }
 }
 

@@ -695,8 +695,8 @@ public async Task<TransactionReportPage> GetTransactionsAsync(TransactionReportF
     decimal totalAmount;
     double averageLatency;
     await using (var aggCommand = new NpgsqlCommand($"""
-        SELECT COUNT(*), ISNULL(SUM(CASE WHEN responsecode = '00' THEN 1 ELSE 0 END), 0),
-               ISNULL(SUM(amount), 0), ISNULL(AVG(CAST(latencymilliseconds AS float)), 0)
+        SELECT COUNT(*), COALESCE(SUM(CASE WHEN responsecode = '00' THEN 1 ELSE 0 END), 0),
+               COALESCE(SUM(amount), 0), COALESCE(AVG(CAST(latencymilliseconds AS float)), 0)
         FROM dbo.transactionlogs
         {whereClause}
         """, connection))
@@ -737,19 +737,19 @@ public async Task<TransactionReportPage> GetTransactionsAsync(TransactionReportF
     return new TransactionReportPage(items, totalCount, approvedCount, totalCount - approvedCount, totalAmount, averageLatency);
 }
 
-public async Task<IReadOnlyList<NodeActivitySummary>> GetNodeActivitySummaryAsync(DateTimeOffset since, CancellationToken cancellationToken = default)
+/*public async Task<IReadOnlyList<NodeActivitySummary>> GetNodeActivitySummaryAsync(DateTimeOffset since, CancellationToken cancellationToken = default)
 {
     await using var connection = _connectionFactory.Create();
     await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
     await using var command = new NpgsqlCommand("""
         SELECT sourcenodeid AS NodeId, 'Source' AS Direction, COUNT(*) AS TxnCount,
                SUM(CASE WHEN responsecode <> '00' THEN 1 ELSE 0 END) AS Declined,
-               AVG(CAST(latencymilliseconds::float)) AS AvgLatency, MAX(createdat) AS LastAt
+               AVG(CAST(latencymilliseconds::double precision)) AS AvgLatency, MAX(createdat) AS LastAt
         FROM dbo.transactionlogs WHERE createdat >= @Since GROUP BY sourcenodeid
         UNION ALL
         SELECT sinknodeid AS NodeId, 'Sink' AS Direction, COUNT(*) AS TxnCount,
                SUM(CASE WHEN responsecode <> '00' THEN 1 ELSE 0 END) AS Declined,
-               AVG(CAST(latencymilliseconds::float)) AS AvgLatency, MAX(createdat) AS LastAt
+               AVG(CAST(latencymilliseconds::double precision)) AS AvgLatency, MAX(createdat) AS LastAt
         FROM dbo.transactionlogs WHERE createdat >= @Since GROUP BY sinknodeid
         """, connection);
     command.Parameters.Add("@Since", NpgsqlTypes.NpgsqlDbType.TimestampTz).Value = since;
@@ -766,6 +766,60 @@ public async Task<IReadOnlyList<NodeActivitySummary>> GetNodeActivitySummaryAsyn
             reader.IsDBNull(4) ? 0d : reader.GetDouble(4),
             reader.IsDBNull(5) ? null : reader.GetDateTime(5)));
     }
+    return results;
+}
+*/
+public async Task<IReadOnlyList<NodeActivitySummary>> GetNodeActivitySummaryAsync(
+    DateTimeOffset since,
+    CancellationToken cancellationToken = default)
+{
+    await using var connection = _connectionFactory.Create();
+    await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+    await using var command = new NpgsqlCommand("""
+        SELECT
+            sourcenodeid AS NodeId,
+            'Source' AS Direction,
+            COUNT(*) AS TxnCount,
+            SUM(CASE WHEN responsecode <> '00' THEN 1 ELSE 0 END) AS Declined,
+            AVG(latencymilliseconds::double precision) AS AvgLatency,
+            MAX(createdat) AS LastAt
+        FROM dbo.transactionlogs
+        WHERE createdat >= @Since
+        GROUP BY sourcenodeid
+
+        UNION ALL
+
+        SELECT
+            sinknodeid AS NodeId,
+            'Sink' AS Direction,
+            COUNT(*) AS TxnCount,
+            SUM(CASE WHEN responsecode <> '00' THEN 1 ELSE 0 END) AS Declined,
+            AVG(latencymilliseconds::double precision) AS AvgLatency,
+            MAX(createdat) AS LastAt
+        FROM dbo.transactionlogs
+        WHERE createdat >= @Since
+        GROUP BY sinknodeid
+        """, connection);
+
+    command.Parameters.Add("@Since", NpgsqlTypes.NpgsqlDbType.TimestampTz).Value = since;
+
+    var results = new List<NodeActivitySummary>();
+
+    await using var reader =
+        await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+
+    while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+    {
+        results.Add(new NodeActivitySummary(
+            reader.GetString(0),
+            reader.GetString(1),
+            (int)reader.GetInt64(2),
+            Convert.ToInt32(reader.GetValue(3), CultureInfo.InvariantCulture),
+            reader.IsDBNull(4) ? 0d : reader.GetDouble(4),
+            reader.IsDBNull(5) ? null : reader.GetDateTime(5)));
+    }
+
     return results;
 }
 

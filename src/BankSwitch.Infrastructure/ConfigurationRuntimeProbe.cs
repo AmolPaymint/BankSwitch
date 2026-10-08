@@ -5,14 +5,19 @@ namespace BankSwitch.Infrastructure;
 
 public sealed class ConfigurationRuntimeProbe : IConfigurationRuntimeProbe
 {
-    private readonly SecureSqlConnectionFactory _sql;
-    private readonly IConfiguration _configuration;
-
-    public ConfigurationRuntimeProbe(SecureSqlConnectionFactory sql, IConfiguration configuration)
+    //private readonly SecureSqlConnectionFactory _sql;
+    private readonly SecurePostgresConnectionFactory _sql;
+    private readonly IConfiguration _configuration;public ConfigurationRuntimeProbe(SecurePostgresConnectionFactory sql, IConfiguration configuration)
     {
         _sql = sql;
         _configuration = configuration;
     }
+
+  /*  public ConfigurationRuntimeProbe(SecureSqlConnectionFactory sql, IConfiguration configuration)
+    {
+        _sql = sql;
+        _configuration = configuration;
+    }*/
 
     public async Task<IReadOnlyCollection<ConfigurationDiagnostic>> ProbeAsync(CancellationToken cancellationToken = default)
     {

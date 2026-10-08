@@ -267,8 +267,11 @@ public sealed class OwaspVerificationService : IOwaspVerificationService
             OwaspControlStatus.Pass, "PanEncryptionValidator (B3) scans logs; MaskedPan used in all API responses"));
 
         // --- V9 Communication Security ---
-        results.Add(Control("V9.1.1", "Communication", "TLS ≥ 1.2 enforced for all connections", OwaspAsvLevel.L1_Basic,
+      /*  results.Add(Control("V9.1.1", "Communication", "TLS ≥ 1.2 enforced for all connections", OwaspAsvLevel.L1_Basic,
             OwaspControlStatus.Pass, "SecureSqlConnectionFactory enforces TLS 1.2; Redis TLS in production; HSTS header set"));
+*/
+        results.Add(Control("V9.1.1", "Communication", "TLS ≥ 1.2 enforced for all connections", OwaspAsvLevel.L1_Basic,
+            OwaspControlStatus.Pass, "SecurePostgresConnectionFactory enforces TLS 1.2; Redis TLS in production; HSTS header set"));
 
         results.Add(Control("V9.2.1", "Communication", "Server certificate validated (no self-signed in production)", OwaspAsvLevel.L1_Basic,
             isProduction ? OwaspControlStatus.Pass : OwaspControlStatus.ManualVerificationRequired,

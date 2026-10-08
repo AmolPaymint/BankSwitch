@@ -1,0 +1,20 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "BankSwitch.Admin - Development",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/BankSwitch.Admin/bin/Debug/net8.0/BankSwitch.Admin.dll",
+            "cwd": "${workspaceFolder}/src/BankSwitch.Admin",
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "DOTNET_ENVIRONMENT": "Development",
+                "ASPNETCORE_URLS": "https://localhost:5001"
+            },
+            "args": [],
+            "stopAtEntry": false,
+            "console": "integratedTerminal"
+        }
+    ]
+}
