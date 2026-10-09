@@ -25,7 +25,7 @@ public async Task<CardToken?> GetTokenAsync(string token,CancellationToken cance
 {
     await using var connection = _connectionFactory.Create();
     await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
-    await using var command = new NpgsqlCommand("""SELECT {Columns} FROM dbo.cardtokens WHERE token = @Token """, connection);
+    await using var command = new NpgsqlCommand($"""SELECT {Columns} FROM dbo.cardtokens WHERE token = @Token """, connection);
     command.Parameters.AddWithValue("@Token", token);
     await using var reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
     return await reader.ReadAsync(cancellationToken).ConfigureAwait(false)
@@ -36,7 +36,7 @@ public async Task<CardToken?> GetTokenAsync(string token,CancellationToken cance
     {
         await using var connection = _connectionFactory.Create();
         await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
-        await using var command = new NpgsqlCommand("SELECT {Columns} FROM dbo.cardtokens ORDER BY createdat DESC", connection);
+        await using var command = new NpgsqlCommand($"SELECT {Columns} FROM dbo.cardtokens ORDER BY createdat DESC", connection);
         var results = new List<CardToken>();
         await using var reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
         while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
@@ -49,7 +49,7 @@ public async Task<CardToken?> GetActiveTokenByPanHashAsync( string panHash, stri
 {
     await using var connection = _connectionFactory.Create();
     await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
-    await using var command = new NpgsqlCommand("""
+    await using var command = new NpgsqlCommand($"""
         SELECT {Columns} FROM dbo.cardtokens
         WHERE panhash = @PanHash
           AND merchantid = @MerchantId
