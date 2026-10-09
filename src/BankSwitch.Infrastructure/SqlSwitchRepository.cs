@@ -915,13 +915,13 @@ private static (string WhereClause, List<(string Name, object Value, NpgsqlTypes
         command.Parameters.Add("@Id", NpgsqlTypes.NpgsqlDbType.Uuid).Value = id;
         command.Parameters.AddWithValue("@NodeId", nodeId);
         command.Parameters.AddWithValue("@Name", name);
-        command.Parameters.Add("@IsActive", NpgsqlTypes.NpgsqlDbType.Bit).Value = isActive;
-        command.Parameters.Add("@RequireMtls", NpgsqlTypes.NpgsqlDbType.Bit).Value = security.RequireMtls;
-        command.Parameters.Add("@RequirePrivateNetwork", NpgsqlTypes.NpgsqlDbType.Bit).Value = security.RequirePrivateNetwork;
+        command.Parameters.Add("@IsActive", NpgsqlTypes.NpgsqlDbType.Boolean).Value = isActive;
+        command.Parameters.Add("@RequireMtls", NpgsqlTypes.NpgsqlDbType.Boolean).Value = security.RequireMtls;
+        command.Parameters.Add("@RequirePrivateNetwork", NpgsqlTypes.NpgsqlDbType.Boolean).Value = security.RequirePrivateNetwork;
         command.Parameters.AddWithValue("@AllowedCidrs", FormatSet(security.AllowedCidrs));
         command.Parameters.AddWithValue("@CertificateThumbprint", security.CertificateThumbprint);
         command.Parameters.Add("@TpsLimit", NpgsqlTypes.NpgsqlDbType.Integer).Value = limits.TpsLimit;
-        command.Parameters.Add("@DailyAmountLimit", NpgsqlTypes.NpgsqlDbType.Double).Value = limits.DailyAmountLimit;
+        command.Parameters.Add("@DailyAmountLimit", NpgsqlTypes.NpgsqlDbType.Numeric).Value = limits.DailyAmountLimit;
         command.Parameters.Add("@MaxMessageBytes", NpgsqlTypes.NpgsqlDbType.Integer).Value = limits.MaxMessageBytes;
         command.Parameters.Add("@IdleTimeoutSeconds", NpgsqlTypes.NpgsqlDbType.Integer).Value = (int)limits.IdleTimeout.TotalSeconds;
         command.Parameters.AddWithValue("@PermittedMtis", FormatSet(permittedMtis));
