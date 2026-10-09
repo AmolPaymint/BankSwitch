@@ -46,7 +46,7 @@ namespace BankSwitch.Infrastructure
     {
         ValidateTable(table);
         await using var connection = await factory.OpenAsync(ct).ConfigureAwait(false);
-        var sql ="""
+        var sql =$"""
 MERGE {table} WITH (HOLDLOCK) AS target
 USING (SELECT @Id AS id) AS source ON target.id = source.id
 WHEN MATCHED THEN UPDATE SET
@@ -93,7 +93,7 @@ VALUES
     {
         ValidateTable(table);
         await using var connection = await factory.OpenAsync(ct).ConfigureAwait(false);
-        var sql = "SELECT payloadjson FROM {table} WHERE recordtype=@RecordType";
+        var sql = $"SELECT payloadjson FROM {table} WHERE recordtype=@RecordType";
         if (scheme is not null) sql += " AND scheme=@Scheme";
         if (parentId is not null) sql += " AND parentid=@ParentId";
         if (secondaryKey is not null) sql += " AND secondarykey=@SecondaryKey";
@@ -113,7 +113,7 @@ VALUES
     {
         ValidateTable(table);
         await using var connection = await factory.OpenAsync(ct).ConfigureAwait(false);
-        await using var cmd = new NpgsqlCommand("SELECT COUNT(*) FROM {table} WHERE recordtype=@RecordType", connection)
+        await using var cmd = new NpgsqlCommand($"SELECT COUNT(*) FROM {table} WHERE recordtype=@RecordType", connection)
         { CommandTimeout = factory.CommandTimeout };
         cmd.Parameters.Add("@RecordType", NpgsqlDbType.Varchar).Value = recordType;
         var value = await cmd.ExecuteScalarAsync(ct).ConfigureAwait(false);

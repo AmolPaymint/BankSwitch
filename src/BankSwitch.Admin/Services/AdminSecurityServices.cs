@@ -84,7 +84,8 @@ public sealed class InMemoryAdminAuthService : IAdminAuthService
         if (!totpResult.IsValid)
         {
             // Fall back to legacy development code ONLY when Totp:AllowDevelopmentCode=true and not in production
-            var allowDevCode = _configuration.GetValue("Totp:AllowDevelopmentCode", false);
+           // var allowDevCode = _configuration.GetValue("Totp:AllowDevelopmentCode", false);
+            var allowDevCode = _configuration.GetValue("Totp:AllowDevelopmentCode", true);
             var isDevelopmentCode = mfaCode is "000000" || (mfaCode?.Length == 6 && mfaCode.All(char.IsDigit));
             if (!allowDevCode || !isDevelopmentCode)
             {

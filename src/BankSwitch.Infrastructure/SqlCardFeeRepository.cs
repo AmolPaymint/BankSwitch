@@ -16,7 +16,7 @@ public async Task<IReadOnlyList<CardFeeRule>> GetCardFeeRulesAsync(CancellationT
 {
     await using var connection = _connectionFactory.Create();
     await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
-    await using var command = new NpgsqlCommand("SELECT {Columns} FROM dbo.cardfeerules ORDER BY feetype, scopetype, scopevalue",  connection);
+    await using var command = new NpgsqlCommand($"SELECT {Columns} FROM dbo.cardfeerules ORDER BY feetype, scopetype, scopevalue",  connection);
     var results = new List<CardFeeRule>();
     await using var reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
     while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
@@ -30,7 +30,7 @@ public async Task<CardFeeRule?> GetCardFeeRuleByIdAsync(Guid id,CancellationToke
 {
     await using var connection = _connectionFactory.Create();
     await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
-    await using var command = new NpgsqlCommand("SELECT {Columns} FROM dbo.cardfeerules WHERE id = @Id LIMIT 1",  connection);
+    await using var command = new NpgsqlCommand($"SELECT {Columns} FROM dbo.cardfeerules WHERE id = @Id LIMIT 1",  connection);
     command.Parameters.Add("@Id", NpgsqlDbType.Uuid).Value = id;
     await using var reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
     return await reader.ReadAsync(cancellationToken).ConfigureAwait(false)

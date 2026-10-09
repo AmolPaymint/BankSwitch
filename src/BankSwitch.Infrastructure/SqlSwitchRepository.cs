@@ -324,7 +324,7 @@ public sealed class SqlSwitchRepository : ITransactionRepository, INodeRepositor
     {
         await using var connection = _connectionFactory.Create();
         await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
-        await using var command = new NpgsqlCommand("SELECT " + RouteColumns + " FROM dbo.routes ORDER BY priority DESC, binprefix", connection);
+        await using var command = new NpgsqlCommand($"SELECT {RouteColumns} FROM dbo.routes ORDER BY priority DESC, binprefix", connection);
         var results = new List<RouteDefinition>();
         await using var reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
         while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
@@ -337,7 +337,7 @@ public sealed class SqlSwitchRepository : ITransactionRepository, INodeRepositor
     {
         await using var connection = _connectionFactory.Create();
         await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
-        await using var command = new NpgsqlCommand("SELECT " + RouteColumns + " FROM dbo.routes WHERE id = @Id LIMIT 1 ", connection);
+        await using var command = new NpgsqlCommand($"SELECT {RouteColumns} FROM dbo.routes WHERE id = @Id LIMIT 1 ", connection);
         command.Parameters.Add("@Id", NpgsqlTypes.NpgsqlDbType.Uuid).Value = id;
         await using var reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
         return await reader.ReadAsync(cancellationToken).ConfigureAwait(false) ? ReadRoute(reader) : null;
