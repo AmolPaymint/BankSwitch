@@ -48,7 +48,7 @@ public sealed record NodeSecurityProfile
 public sealed record NodeLimits
 {
     public int TpsLimit { get; init; } = 50;
-    public decimal DailyAmountLimit { get; init; } = 0m;
+    public decimal DailyAmountLimit { get; init; } = 0;
     public int MaxMessageBytes { get; init; } = 4096;
     public TimeSpan IdleTimeout { get; init; } = TimeSpan.FromSeconds(65);
 }
